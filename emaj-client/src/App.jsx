@@ -13,14 +13,13 @@ import { useSelector } from 'react-redux';
 const DefaultLayout = React.lazy(() => import('./layout/Default'));
 
 function App() {
-  const user = true; // true vai para a página inicial, false vai para o login
-  //const user = useSelector((state) => state.user.currentUser);
-
+  //const user = true; // true vai para a página inicial, false vai para o login
+  const user = useSelector((state) => state.user.currentUser);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={user ? <Navigate to="/demandas" /> : <Login />} />
+        <Route index element={user ? <Navigate to="/demandas" /> : <Login />} />
 
         <Route element={user ? <DefaultLayout /> : <Login />}>
           <Route path="/demandas" element={<Demandas />} />

@@ -2,21 +2,17 @@ import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
-import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { reducerUserLogout } from "../../../redux/userRedux";
 
 export default function LogoutDialogue(props) {
-  const user = useSelector((state) => state.user.currentUser);
-  const dispatch = useDispatch();
+  const dispatchLogout = useDispatch();
 
   const cancelButtonRef = useRef(null)
 
-  const handleLogout = () => {
-    dispatch(reducerUserLogout());
-    props.setOpenLogoutAlert(false)
-
-  };
+ const handleLogout = () => {
+    dispatchLogout(reducerUserLogout())
+  }
 
   return (
       <Transition.Root show={props.openLogoutAlert} as={Fragment} >

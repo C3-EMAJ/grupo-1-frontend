@@ -6,6 +6,8 @@ import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
+import { useSelector } from 'react-redux';
+
 import LogoutDialogue from './dialogues/LogoutDialogue';
 
 import { NavLink, useLocation } from 'react-router-dom';
@@ -13,6 +15,10 @@ import { NavLink, useLocation } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 
 export default function SideBar() {
+  // Pegando o usuário logado, para pegar as informações:
+  const user = useSelector((state) => state.user.currentUser);
+  //
+
   // Abrir modal de mensagem para deslogar:
   const [openLogoutAlert, setOpenLogoutAlert] = useState(false);
   //
@@ -36,9 +42,9 @@ export default function SideBar() {
           </div>
     
           <div className="flex flex-col items-center mt-10 mb-5 -mx-2 h-2/6">
-            <img className="object-cover w-40 h-40 mx-2 rounded-full" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="avatar" />
-            <h4 className="mx-2 mt-2 font-medium text-gray-800 dark:text-gray-200">Pedro</h4>
-            <p className="mx-2 mt-1 text-sm font-medium text-gray-600 dark:text-gray-400">Aluno</p>
+            <img className="object-cover w-40 h-40 mx-2 rounded-full" src={user.img || "https://i.imgur.com/oYEFKb1.png"} />
+            <h4 className="mx-2 mt-2 font-medium text-gray-800 dark:text-gray-200">{user.name}</h4>
+            <p className="mx-2 mt-1 text-sm font-medium text-gray-600 dark:text-gray-400">{user.type}</p>
           </div>
     
           <div className="flex flex-col justify-between mt-10">
