@@ -114,6 +114,7 @@ export default function Home() {
   return (
   
     <>
+
       <Snackbar
         open={showAlertMessage}
         severity="success"
@@ -125,10 +126,9 @@ export default function Home() {
           <Alert  severity={typeAlertMessage} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
+      </Snackbar>
 
-        </Snackbar>
-
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex h-full flex-col mt-5 justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             className="mx-auto h-10 w-auto"
@@ -211,11 +211,8 @@ export default function Home() {
             )}
           </React.Fragment>
 
-          
         </div>
       </div>
     </>
   );
 };
-
-// <button onClick={() => {handleAlert("error", "Erro!")}}>CLIQUE AQUI</button>
