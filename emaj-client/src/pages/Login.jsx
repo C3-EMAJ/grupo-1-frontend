@@ -22,7 +22,6 @@ function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
 }
 
-
 /*
     Importante salientar:
     
@@ -71,6 +70,7 @@ export default function Home() {
   // Acão quando o botão de Login é clicado:
   const submitLoginCheck = (e) => {
     e.preventDefault();
+
     if (isLoading === false) {
       setIsLoading(true);
     }
@@ -141,27 +141,26 @@ export default function Home() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" action="#" method="POST">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              <label className="block text-sm font-medium leading-6 text-gray-900">
                 Email
               </label>
               <div className="mt-2">
                 <input className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300" 
-                type="email" aria-label="Email Address" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                <label className="block text-sm font-medium leading-6 text-gray-900">
                   Senha
                 </label>
               </div>
 
-              <label htmlFor="password" className="relative text-gray-400 focus-within:text-gray-600 block">
+              <label className="relative text-gray-400 focus-within:text-gray-600 block">
                 <input
                   className="flex w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                   type={showPassword ? "password" : "text"}
-                  aria-label="Password"
                   value={password} onChange={(e) => setPassword(e.target.value)}
                 />
                 <React.Fragment>
@@ -197,7 +196,7 @@ export default function Home() {
           <br/>
           <div className="flex w-full justify-center">
             <div className="text-sm">
-                <a href="#" className="font-semibold text-gray-500 hover:text-gray-900">
+                <a className="font-semibold text-gray-500 hover:text-gray-900">
                   Esqueceu sua senha?
                 </a>
             </div>

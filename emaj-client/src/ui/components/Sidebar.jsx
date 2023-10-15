@@ -9,6 +9,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useSelector } from 'react-redux';
 
 import LogoutDialogue from './dialogues/LogoutDialogue';
+import NewDialogue from './dialogues/NewDialogue';
 
 import { NavLink, useLocation } from 'react-router-dom';
 
@@ -35,7 +36,7 @@ export default function SideBar() {
   //
 
   return(
-    <aside className="absolute scroll-sidebar left-0 top-0 z-9999 flex h-screen w-3/12 max-w-sm flex-col overflow-y-hidden bg-gray-300 p-4 duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0">
+    <div className="scroll-sidebar left-0 top-0 z-9999 flex h-screen w-3/12 max-w-sm flex-col overflow-y-hidden bg-gray-300 p-4 duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0">
           <div className="logo-emaj">
               <div className="barra"></div>
               <div className="nome-emaj">EMAJ</div>
@@ -89,11 +90,13 @@ export default function SideBar() {
                 <LogoutOutlinedIcon/>
                 <span className="mx-4 font-medium">Sair</span>
               </button>
+
+              {openLogoutAlert && <LogoutDialogue setOpenLogoutAlert={setOpenLogoutAlert} />}
             </nav>
           </div>
 
-          {openLogoutAlert && <LogoutDialogue setOpenLogoutAlert={setOpenLogoutAlert} openLogoutAlert={openLogoutAlert}/>}
     
-    </aside>
+    
+    </div>
   )
 }
