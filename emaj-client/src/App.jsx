@@ -8,6 +8,8 @@ import Assistidos from './pages/Assistidos';
 import Agendamentos from './pages/Agendamentos';
 import Login from './pages/Login';
 
+import ErrorBoundary from './ErrorBoundary';
+
 import { useSelector } from 'react-redux';
 
 const DefaultLayout = React.lazy(() => import('./layout/Default'));
@@ -17,18 +19,23 @@ function App() {
   const user = useSelector((state) => state.user.currentUser);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={user ? <Navigate to="/demandas" /> : <Login />} />
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={user ? <Navigate to="/demandas" /> : <Login/> }/>
+          
+          <Route element={user ? <DefaultLayout /> : <Navigate to="/login" />}>
+            <Route path="/demandas" element={<Demandas />} />
+            <Route path="/usuarios" element={<Usuarios />} />
+            <Route path="/assistidos" element={<Assistidos />} />
+            <Route path="/agendamentos" element={<Agendamentos />} />
+          </Route>
 
-        <Route element={user ? <DefaultLayout /> : <Login />}>
-          <Route path="/demandas" element={<Demandas />} />
-          <Route path="/usuarios" element={<Usuarios />} />
-          <Route path="/assistidos" element={<Assistidos />} />
-          <Route path="/agendamentos" element={<Agendamentos />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<Navigate to="/login" />} />
+
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
