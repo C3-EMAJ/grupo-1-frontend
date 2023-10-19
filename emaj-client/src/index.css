@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.scroll-sidebar {
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.scroll-sidebar::-webkit-scrollbar {
+  width: 3px;
+  border-radius: 5px; 
+} 
+
+.scroll-sidebar::-webkit-scrollbar-thumb{
+  background-color: #FDAE17;
+  border-radius: 5px;
+}
+
+
+.logo-emaj {
+    width: 100%;
+    display: flex;
+    left: 10px;
+    align-items: center;
+    gap: 10px;
+}
+
+.barra {
+    height: 2rem;
+    width: .4rem;
+    background-color: #FDAE17;
+}
+
+.nome-emaj {
+    font-family: 'Montserrat', sans-serif;
+    size: 25px;
+    font-weight: 700;
+}
