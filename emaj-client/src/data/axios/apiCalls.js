@@ -5,6 +5,15 @@ export const loginRequest = async (user) => {
     const res = publicRequest.post("/auth/login", user);
     return res
   } catch (err) {
-    return err
+    return false
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const res = adminRequest.get("/users/find-all");
+    return res
+  } catch (err) {
+    return false
   }
 };
