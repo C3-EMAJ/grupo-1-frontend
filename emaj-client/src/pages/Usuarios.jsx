@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-import AddUser from "../ui/components/CRUD-Modals/AddUser";
-import LoaderTables from "../ui/components/LoaderTables";
-import UsersTable from "../ui/components/DataTables/UsersTable";
+import AddUser from "../components/modals/AddUser";
+import LoaderTables from "../components/LoaderTables";
+import UsersTable from "../components/datatables/UsersTable";
 
 import { getAllUsers } from "../data/axios/apiCalls";
 
@@ -16,15 +16,14 @@ export default function Usuarios() {
   const [openAddModal, setOpenAddModal] = useState(false);
   //
 
-  // Usuário que é selecionado para alguma ação (editar ou excluir):
-  const [selectedUser, setSelectedUser] = useState(false);
-  //
-
   // Usuários que são pegos do DB:
   const [users, setUsers] = useState([]);
   //
 
-  
+  // Se ocorrer um erro ao fazer o "fetch" dos usuários:
+  const [errorGettingTheUsersTable, setErrorGettingTheUsersTable] = useState(false);
+  //
+
   // Verificando se "users" está vazio:
   useEffect(() => {
     if (users.length === 0){ 
@@ -43,19 +42,31 @@ export default function Usuarios() {
 
       const req = getAllUsers();
       req.then(response => {
+
+        console.log(response)
+
+        if (response.status === 200) {
           const usersData = response.data;
-          console.log(usersData)
           setUsers(usersData);
-          setIsLoading(false)
+          setIsLoading(false);
+          setErrorGettingTheUsersTable(false)
+        }
+
+        else {
+          setIsLoading(false);
+          setErrorGettingTheUsersTable(true);
+        }
+
         }).catch(error => {
-          console.log(error)
+          setIsLoading(false);
+          setErrorGettingTheUsersTable(true);
         });
     } catch (error) {
-      console.log(error);
+      setIsLoading(false);
+      setErrorGettingTheUsersTable(true);
     }
   };
   //
-
 
   return (
     <div className="flex flex-col min-h-screen rounded-md border screen rounded-lg bg-white px-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -87,17 +98,33 @@ export default function Usuarios() {
       </div>
 
       <div className="flex flex-colum w-full h-full">
-            {isLoading ? (
-              
-              <LoaderTables />
-              
-              ) : (
-                <div className="mt-4 w-full h-full mb-4">
-                  <UsersTable users={users} />
-                </div>
-                )}
+        
+        <React.Fragment>
+          {isLoading ? (
+
+            <LoaderTables />
+
+          ) : errorGettingTheUsersTable ? (
+
+            <div className="w-full">
+              <div className="bg-red-500 mt-5 text-white font-bold rounded-t px-4 py-2">
+                Ocorreu um Erro
+              </div>
+              <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                <p>Se o erro persistir contate os administradores do sistema.</p>
+              </div>
+            </div>
+
+          ) : (
+            <div className="mt-4 mb-4 w-full">
+              <UsersTable users={users} />
+            </div>
+
+          )}
+        </React.Fragment>
 
       {openAddModal && <AddUser setOpenAddModal={setOpenAddModal}/>}
+
       </div>
     </div>
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 // Componentes:
-import LoaderTables from "../ui/components/LoaderTables";
+import LoaderTables from "../components/LoaderTables";
 
 // Ícones:
 import AddIcon from '@mui/icons-material/Add';

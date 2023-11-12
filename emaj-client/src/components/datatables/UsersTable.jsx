@@ -7,6 +7,7 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 
+import DeleteUserDialogue from '../dialogues/DeleteUserDialogue';
 
 export default function UsersTable(props) {
     // Personalizando o estilo da tabela:
@@ -67,15 +68,15 @@ export default function UsersTable(props) {
             return (
                 <div className="flex w-full justify-between">
                     <button className="mx-1">
-                        <RemoveRedEyeOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => seeUser(tableMeta.rowData)} />
+                        <RemoveRedEyeOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => seeUser(tableMeta.rowData[0])} />
                     </button>
 
                     <button className="mx-1">
-                        <EditOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => updateUser(tableMeta.rowData)} />
+                        <EditOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => updateUser(tableMeta.rowData[0])} />
                     </button>
 
                     <button className="mx-1">
-                        <DeleteOutlineOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => deleteUser(tableMeta.rowData)} />
+                        <DeleteOutlineOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => deleteUser(tableMeta.rowData[0])} />
                     </button>
                 </div>
             );}
@@ -94,17 +95,26 @@ export default function UsersTable(props) {
     };
     //
 
+    // Usuário que é selecionado para alguma ação (editar ou excluir):
+    const [selectedUser, setSelectedUser] = useState(false);
+    //
+
+    // Abrir o diálogo para excluir um usuário:
+    const [openDeleteUserDialogue, setDeleteUserDialogue] = useState(false);
+    //
+
     //Funções que são chamadas quando clicamos nos botões que estão na coluna "Ações" da tabela:
-    const seeUser = (userData) => {
-        console.log(userData)
+    const seeUser = (userId) => {
+        console.log(userId)
     }
 
-    const updateUser = (userData) => {
-        console.log(userData)
+    const updateUser = (userId) => {
+        console.log(userId)
     }
     
-    const deleteUser = (userData) => {
-        console.log(userData)
+    const deleteUser = (userId) => {
+        setDeleteUserDialogue(true)
+        setSelectedUser(props.users.find(user => user.id === userId))
     }
     //
 
@@ -127,6 +137,8 @@ export default function UsersTable(props) {
             
         </ThemeProvider>
 
+        {openDeleteUserDialogue && <DeleteUserDialogue setDeleteUserDialogue={setDeleteUserDialogue} selectedUser={selectedUser} />}
+    
     </Box>
     );
 }

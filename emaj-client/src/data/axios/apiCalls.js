@@ -1,8 +1,8 @@
-import { publicRequest, adminRequest } from "./requestMethods"
+import { apiRequest } from "./requestMethods"
 
 export const loginRequest = async (user) => {
   try {
-    const res = publicRequest.post("/auth/login", user);
+    const res = apiRequest.post("/auth/login", user);
     return res
   } catch (err) {
     return false
@@ -11,7 +11,25 @@ export const loginRequest = async (user) => {
 
 export const getAllUsers = async () => {
   try {
-    const res = adminRequest.get("/users/find-all");
+    const res = apiRequest.get("/users/find-all");
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const addNewUser = async () => {
+  try {
+    const res = apiRequest.post("/users/add", newUserInfo);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    const res = await apiRequest.delete(`/users/delete/${id}`);
     return res
   } catch (err) {
     return false
