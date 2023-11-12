@@ -1,20 +1,48 @@
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 
 import { useState } from 'react';
 
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 700,
+  
+  };
+
 export default function AddUser(props) {
+    // Para fechar o modal e mudar o estado do openLogouAlert (definido na SideBar e passado pelo props):
+    const [openAlert, setOpen] = useState(true);
+    const handleClose = () => {
+        setOpen(false);
+        props.setOpenAddModal(false);
+    }
+    //
+
     // Informações do usuário:
     const [userName, setUserName] = useState("");
     const [userEmail, setUserEmail] = useState("");
+    
     const [userFunction, setUserFunction] = useState("");
+    const getSelectedValue = (e) => {
+      setUserFunction(e.target.value);
+    }
     //
     
-
-    return(
-    <div className="w-full h-full absolute top-0 left-0 bg-black bg-opacity-75 flex items-center justify-center">
-        <div className="relative w-full max-w-2xl md:h-auto">
+    return(<Modal
+        open={openAlert}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+        <div className="relative">
             <div className="relative bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                 <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -23,7 +51,7 @@ export default function AddUser(props) {
                 <button
                     type="button"
                     className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover-bg-gray-600 dark:hover-text-white"
-                    onClick={() => props.setOpenAddModal(false)}
+                    onClick={handleClose}
                 >
                     <CloseIcon/>
                 </button>
@@ -39,7 +67,7 @@ export default function AddUser(props) {
                     type="text"
                     name="name"
                     id="name"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                     placeholder="Nome do usuário"
                     required
                 />
@@ -55,7 +83,7 @@ export default function AddUser(props) {
                     type="text"
                     name="name"
                     id="name"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                     placeholder="Email do usuário"
                     required
                 />
@@ -65,14 +93,14 @@ export default function AddUser(props) {
                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Função
                 </label>
-                <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                    <option>Selecione a função</option>
-                    <option value="TV">Administrador</option>
-                    <option value="GA">Professor</option>
-                    <option value="PC">Advogado</option>
-                    <option value="PH">Aluno</option>
+                <select onChange={getSelectedValue} value={userFunction} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:placeholder-gray-400 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300">
+                    <option>Aluno</option>
+                    <option>Administrador</option>
+                    <option>Professor</option>
+                    <option>Advogado</option>
                 </select>
             </div>
+
             <div className="sm:col-span-3">
                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Foto
@@ -99,7 +127,7 @@ export default function AddUser(props) {
         </form>
         </div>
       </div>
-    </div>    
-
+        </Box>      
+      </Modal>
     );
 }

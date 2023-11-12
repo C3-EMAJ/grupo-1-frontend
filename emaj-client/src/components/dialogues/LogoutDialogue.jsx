@@ -25,7 +25,7 @@ export default function LogoutDialogue(props) {
   }
   //
 
-  // Parda deslogar:
+  // Para deslogar:
   const dispatchLogout = useDispatch();
   const handleLogout = (e) => {
     dispatchLogout(reducerUserLogout());
