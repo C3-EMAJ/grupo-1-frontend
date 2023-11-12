@@ -7,6 +7,7 @@ import Usuarios from './pages/Usuarios';
 import Assistidos from './pages/Assistidos';
 import Agendamentos from './pages/Agendamentos';
 import Login from './pages/Login';
+import Perfil from "./pages/Perfil";
 
 import ErrorBoundary from './ErrorBoundary';
 
@@ -29,6 +30,7 @@ function App() {
             <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/assistidos" element={<Assistidos />} />
             <Route path="/agendamentos" element={<Agendamentos />} />
+            <Route path="/perfil" element={<Perfil />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" />} />

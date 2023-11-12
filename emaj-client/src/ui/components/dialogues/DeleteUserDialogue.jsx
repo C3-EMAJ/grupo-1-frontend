@@ -3,8 +3,8 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-// import { useDispatch } from "react-redux";
-// import { reducerUserLogout } from "../../redux"; ->>> Temos que corrigir esse erro
+import { useDispatch } from "react-redux";
+import { reducerUserLogout } from "../../../redux/userRedux";
 import { useState } from 'react';
 
 const style = {
