@@ -35,12 +35,13 @@ export default function AddUser(props) {
     }
     //
     
-    return(<Modal
-        open={openAlert}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+    return(
+        <Modal
+            open={openAlert}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
         <Box sx={style}>
         <div className="relative">
             <div className="relative bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
@@ -101,25 +102,10 @@ export default function AddUser(props) {
                 </select>
             </div>
 
-            <div className="sm:col-span-3">
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Foto
-                </label>
-                <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                        <div className="flex flex-col items-center justify-center">
-                        <CloudUploadOutlinedIcon style={{ fontSize: "3rem"}}/>
-                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Clique aqui para fazer upload</span> ou arraste a imagem</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">.PNG ou .JPG</p>
-                        </div>
-                        <input type="file" className="hidden" />
-                    </label>
-                </div>
-            </div>
             </div>
             <button
                 type="submit"
-                className="text-white inline-flex items-center bg-yellow-500 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+                className="text-white inline-flex mt- items-center bg-yellow-500 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
             >
                 <AddIcon/>
                 Adicionar Usuário
