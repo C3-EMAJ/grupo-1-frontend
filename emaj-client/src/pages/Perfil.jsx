@@ -1,13 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ActivityLog from "../ui/components/ActivityLog";
 import { useSelector } from 'react-redux';
+import { getActivities } from "../data/axios/apiCalls";
 
+import moment from "moment"
 export default function Perfil() {
     const user = useSelector((state) => state.user.currentUser);
+    const [activities, setActivities] = useState([])
+    useEffect(() => {
+        fetchActivities()
+    }, [])
+    
+    const fetchActivities = async () => {
+        const req = getActivities(user.id)
+        req.then(response => {
+            if (response.status === 200) {
+               setActivities(response.data)
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    }
     return (
         <div className="flex flex-col min-h-screen rounded-md border screen rounded-lg bg-white px-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="mt-10 h-full bg-white p-8 ">
-                <div className="bg-white rounded-lg shadow-xl pb-8">
+                <div className="bg-white rounded-lg shadow-md pb-8">
                     <div className="w-full h-[250px]">
                     <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8j18z7o-rhfY7wEUVcEcDiqmYRUqc1hoBiA&usqp=CAU"
@@ -41,7 +58,7 @@ export default function Perfil() {
 
                 <div className="my-4 flex justify-center items-center flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                     <div className="w-full flex flex-col sm:flex-row">
-                        <div className="flex-1 bg-white rounded-lg shadow-xl p-8 mb-4 sm:mb-0">
+                        <div className="flex-1 bg-white rounded-lg shadow-md p-8 mb-4 sm:mb-0">
                         <h4 className="text-xl text-gray-900 font-bold">Informações Pessoais</h4>
                         <ul className="mt-2 text-gray-700">
                             <li className="flex border-y py-2">
@@ -51,12 +68,13 @@ export default function Perfil() {
                             {/* ... outras informações pessoais */}
                         </ul>
                         </div>
-                        <div className="flex-1 ml-0 sm:ml-10 bg-white rounded-lg shadow-xl p-8">
+                        <div className="flex-1 ml-0 sm:ml-10 bg-white rounded-lg shadow-md p-8">
                         <h4 className="text-xl text-gray-900 font-bold">Registro de Atividades</h4>
                         <div className="relative px-4">
                             <div className="absolute h-full border border-dashed border-opacity-20 border-secondary"></div>
-                            <ActivityLog action="Informações de perfil trocadas" changeTime="3 minutos atrás" />
-                            <ActivityLog action="Imagem de perfil trocada" changeTime="24 minutos atrás" />
+                            {activities.map((item) => {
+                                <ActivityLog action={item.action} changeTime="" />
+                            })} 
                             <ActivityLog action="Conta criada" changeTime="1 hora atrás" />
                             {/* ... itens do log de atividades */}
                         </div>
