@@ -8,6 +8,8 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
 
+import ResetPassword from "../components/ResetPassword";
+
 import { loginRequest } from "../data/axios/apiCalls";
 import { reducerUserLogin } from "../redux/userRedux";
 import { useDispatch } from "react-redux";
@@ -34,6 +36,9 @@ function SlideTransition(props) {
 */
 
 export default function Home() {
+  // Abrir o modal para resetar a senha:
+  const [openResetPassword, setOpenResetPassword] = useState(false);
+
   // Exibir loading (o círculo que fica rodando):
   const [isLoading, setIsLoading] = useState(false);
   //
@@ -193,11 +198,14 @@ export default function Home() {
           </form>
           <br/>
           <div className="flex w-full justify-center">
-            <div className="text-sm">
+            <button 
+            className="text-sm"
+            onClick={() => setOpenResetPassword(true)}
+            >
                 <a className="font-semibold text-gray-500 hover:text-gray-900">
                   Esqueceu sua senha?
                 </a>
-            </div>
+            </button>
           </div>
 
           <React.Fragment>
@@ -208,8 +216,12 @@ export default function Home() {
             )}
           </React.Fragment>
 
+          {openResetPassword && <ResetPassword setOpenResetPassword={setOpenResetPassword}/>}
+
         </div>
       </div>
+
+
     </>
   );
 };
