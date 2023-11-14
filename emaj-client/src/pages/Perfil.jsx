@@ -2,25 +2,29 @@ import React, { useEffect, useState } from "react";
 import ActivityLog from "../ui/components/ActivityLog";
 import { useSelector } from 'react-redux';
 import { getActivities } from "../data/axios/apiCalls";
+import moment from "moment";
+import 'moment/locale/pt-br';
+moment.locale('pt-br');
 
-import moment from "moment"
 export default function Perfil() {
     const user = useSelector((state) => state.user.currentUser);
-    const [activities, setActivities] = useState([])
+    const [activities, setActivities] = useState([]);
     useEffect(() => {
-        fetchActivities()
-    }, [])
-    
-    const fetchActivities = async () => {
-        const req = getActivities(user.id)
+        const req = getActivities(user.id);
         req.then(response => {
             if (response.status === 200) {
-               setActivities(response.data)
+               setActivities(response.data);
             }
         }).catch(err => {
-            console.log(err)
-        })
-    }
+            console.log(err);
+        });
+    }, []);
+    
+    useEffect(() => {
+        console.log(activities);
+    }, [activities]); 
+    
+
     return (
         <div className="flex flex-col min-h-screen rounded-md border screen rounded-lg bg-white px-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="mt-10 h-full bg-white p-8 ">
@@ -72,14 +76,14 @@ export default function Perfil() {
                         <h4 className="text-xl text-gray-900 font-bold">Registro de Atividades</h4>
                         <div className="relative px-4">
                             <div className="absolute h-full border border-dashed border-opacity-20 border-secondary"></div>
-                            {activities.map((item) => {
-                                <ActivityLog action={item.action} changeTime="" />
-                            })} 
-                            <ActivityLog action="Conta criada" changeTime="1 hora atrás" />
+                            {activities.map((item, index) => (
+                                <ActivityLog action={item.action} changeTime={moment(item.createdAt).fromNow()} />
+                            ))}
+                            <ActivityLog action="Conta criada" changeTime={moment(user.createdAt).fromNow()} />
                             {/* ... itens do log de atividades */}
                         </div>
                         </div>
-                    </div>
+                    </div>  
                 </div>
             </div>
         </div>
