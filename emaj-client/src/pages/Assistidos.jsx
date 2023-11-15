@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 
 // Componentes:
 import LoaderTables from "../components/LoaderTables";
-
+import ClientTable from "../components/datatables/ClientTable";
 // Ícones:
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import AddClient from "../components/modals/AddClient";
 
 export default function Assistidos() {
-  const [isLoading, setIsLoading] = useState(true);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
   return (
     <div className="flex flex-col min-h-screen rounded-md border screen rounded-lg bg-white px-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4 rounded-t border-b">
@@ -29,10 +30,11 @@ export default function Assistidos() {
 
           {/* onClick abaixo (funcionalidade ao botão): */}
           <button
+            onClick={() => setOpenAddModal(true)}
             className="flex items-center justify-center text-white bg-yellow-500 hover:bg-yellow-400 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2 dark:bg-gray-200 dark:hover-bg-yellow-400 focus:outline-none"
           >
             <AddIcon/>
-            Adicionar Demanda
+            Adicionar Assistido
           </button>
           
         </div>
@@ -47,10 +49,12 @@ export default function Assistidos() {
               
               ) : (
                 <div className="mt-4 w-full h-full mb-4">
-                  {/* Tabela vai aqui */}
+                  <ClientTable clients={[]}
+                  />
                 </div>
                 )}
       </div>
+      {openAddModal && <AddClient setOpenAddModal={setOpenAddModal}/>}
     </div>
   );
 };
