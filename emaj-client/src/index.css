@@ -38,3 +38,15 @@
     size: 25px;
     font-weight: 700;
 }
+
+.custom-data-grid {
+  border: 1px solid #ccc;
+}
+
+.w-22 {
+  width: 96.5px;
+}
+
+.f-height {
+  height: 105%;
+}

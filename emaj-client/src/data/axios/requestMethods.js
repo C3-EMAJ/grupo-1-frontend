@@ -7,11 +7,20 @@ const currentUser = user && JSON.parse(user).currentUser;
 
 const TOKEN = currentUser?.accessToken;
 
-export const publicRequest = axios.create({
+export const apiRequest = axios.create({
   baseURL: BASE_URL,
 });
 
-export const adminRequest = axios.create({
-  baseURL: BASE_URL,
-  headers: { token: `EMAJ ${TOKEN}` },
+apiRequest.interceptors.request.use((config) => {
+  const user = JSON.parse(localStorage.getItem("persist:root"))?.user;
+  const currentUser = user && JSON.parse(user).currentUser;
+  const TOKEN = currentUser?.accessToken;
+
+  if (TOKEN) {
+    config.headers.token = `EMAJ ${TOKEN}`;
+  }
+
+  return config;
 });
+
+export default apiRequest;

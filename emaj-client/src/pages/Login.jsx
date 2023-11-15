@@ -6,9 +6,9 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close'
 import Slide from '@mui/material/Slide';
+
+import ResetPassword from "../components/ResetPassword";
 
 import { loginRequest } from "../data/axios/apiCalls";
 import { reducerUserLogin } from "../redux/userRedux";
@@ -36,6 +36,9 @@ function SlideTransition(props) {
 */
 
 export default function Home() {
+  // Abrir o modal para resetar a senha:
+  const [openResetPassword, setOpenResetPassword] = useState(false);
+
   // Exibir loading (o círculo que fica rodando):
   const [isLoading, setIsLoading] = useState(false);
   //
@@ -145,7 +148,7 @@ export default function Home() {
                 Email
               </label>
               <div className="mt-2">
-                <input className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300" 
+                <input className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-yellow-400 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300" 
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
               </div>
             </div>
@@ -159,7 +162,7 @@ export default function Home() {
 
               <label className="relative text-gray-400 focus-within:text-gray-600 block">
                 <input
-                  className="flex w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
+                  className="flex w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-yellow-400 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                   type={showPassword ? "password" : "text"}
                   value={password} onChange={(e) => setPassword(e.target.value)}
                 />
@@ -195,11 +198,14 @@ export default function Home() {
           </form>
           <br/>
           <div className="flex w-full justify-center">
-            <div className="text-sm">
+            <button 
+            className="text-sm"
+            onClick={() => setOpenResetPassword(true)}
+            >
                 <a className="font-semibold text-gray-500 hover:text-gray-900">
                   Esqueceu sua senha?
                 </a>
-            </div>
+            </button>
           </div>
 
           <React.Fragment>
@@ -210,8 +216,12 @@ export default function Home() {
             )}
           </React.Fragment>
 
+          {openResetPassword && <ResetPassword setOpenResetPassword={setOpenResetPassword}/>}
+
         </div>
       </div>
+
+
     </>
   );
 };

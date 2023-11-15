@@ -1,16 +1,14 @@
-import { useState } from 'react';
-
-import Sidebar from '../ui/components/Sidebar';
+import Sidebar from '../components/Sidebar';
 import { Outlet } from 'react-router-dom';
 
 const DefaultLayout = () => {
     return (
-    <div>
-        <div className="flex h-screen w-sreen overflow-hidden">
+    <div className="overflow-hidden h-full min-h-full">
+        <div className="flex mx-auto">
         <Sidebar/>
 
-        <main className="w-10/12">
-            <div className="mx-auto p-4 md:p-4 2xl:p-5">
+        <main className="w-full">
+            <div className="mx-autop-4 md:p-4 2xl:p-5 overflow-auto">
                 <Outlet />
             </div>
         </main>

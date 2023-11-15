@@ -4,7 +4,7 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 
 import { useDispatch } from "react-redux";
-import { reducerUserLogout } from "../../../redux/userRedux";
+import { reducerUserLogout } from "../../redux/userRedux";
 import { useState } from 'react';
 
 const style = {
@@ -25,7 +25,7 @@ export default function LogoutDialogue(props) {
   }
   //
 
-  // Parda deslogar:
+  // Para deslogar:
   const dispatchLogout = useDispatch();
   const handleLogout = (e) => {
     dispatchLogout(reducerUserLogout());
