@@ -54,6 +54,15 @@ export const getAllUsers = async () => {
   }
 };
 
+export const getUser = async (id) => {
+  try {
+    const res = await apiRequest.get(`/users/find/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+}
+
 export const addNewUser = async () => {
   try {
     const res = apiRequest.post("/users/add", newUserInfo);
@@ -71,12 +80,3 @@ export const deleteUser = async (id) => {
     return false
   }
 };
-
-export const getActivities = async (id) => {
-  try {
-    const res = await apiRequest.get(`/activity/find/${id}`);
-    return res
-  } catch (err) {
-    return false
-  }
-}

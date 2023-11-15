@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import ActivityLog from "../components/ActivityLog";
 import { useSelector } from 'react-redux';
-import { getActivities } from "../data/axios/apiCalls";
+import { getUser } from "../data/axios/apiCalls";
 import moment from "moment";
 import 'moment/dist/locale/pt-br'
 moment.locale('pt-br');
 
 export default function Perfil() {
     const user = useSelector((state) => state.user.currentUser);
+    
     const [activities, setActivities] = useState([]);
     useEffect(() => {
-        const req = getActivities(user.id);
+        const req = getUser(user.id);
         req.then(response => {
             if (response.status === 200) {
-               setActivities(response.data);
+               setActivities(response.data.UserActivities);
             }
         }).catch(err => {
             console.log(err);
@@ -21,10 +22,8 @@ export default function Perfil() {
     }, []);
     
     useEffect(() => {
-        console.log(activities);
     }, [activities]); 
     
-
     return (
         <div className="flex flex-col min-h-screen rounded-md border screen rounded-lg bg-white px-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="mt-10 h-full bg-white p-8 ">
@@ -76,8 +75,10 @@ export default function Perfil() {
                         <h4 className="text-xl text-gray-900 font-bold">Registro de Atividades</h4>
                         <div className="relative px-4">
                             <div className="absolute h-full border border-dashed border-opacity-20 border-secondary"></div>
-                            {activities.map((item, index) => (
-                                <ActivityLog action={item.action} changeTime={moment(item.createdAt).fromNow()} />
+                            {activities.reverse().map((item, index) => (
+                                <div key={index}>
+                                    <ActivityLog action={item.action} changeTime={moment(item.createdAt).fromNow()} />
+                                </div>
                             ))}
                             <ActivityLog action="Conta criada" changeTime={moment(user.createdAt).fromNow()} />
                             {/* ... itens do log de atividades */}
