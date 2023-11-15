@@ -71,3 +71,12 @@ export const deleteUser = async (id) => {
     return false
   }
 };
+
+export const getActivities = async (id) => {
+  try {
+    const res = await apiRequest.get(`/activity/find/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+}
