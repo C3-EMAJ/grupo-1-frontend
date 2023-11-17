@@ -3,9 +3,9 @@ import Box from '@mui/material/Box';
 
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import { getAllUsers } from "../../data/axios/apiCalls";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const style = {
     position: 'absolute',
@@ -13,40 +13,188 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 700,
-  
   };
 
 export default function AddClient(props) {
     // Para fechar o modal e mudar o estado do openLogouAlert (definido na SideBar e passado pelo props):
+    const [formData, setFormData] = useState({
+        name: "",
+        representative: "",
+        rg: "",
+        birthDate: "",
+        cpf: "",
+        firstCellphone: "",
+        secondCellphone: "",
+        profession: "",
+        familyIncome: "",
+        address: "",
+        dependents: "",
+        email: "",
+        familiar: "",
+    });
+
+    const [usersData, setUsers] = useState({});
+
+    const [formErrors, setFormErrors] = useState({});
+    const [loading, setLoading] = useState(false);
+
     const [openAlert, setOpen] = useState(true);
+    
     const handleClose = () => {
+        setFormData({
+            name: "",
+            representative: "",
+            rg: "",
+            birthDate: "",
+            cpf: "",
+            firstCellphone: "",
+            secondCellphone: "",
+            profession: "",
+            familyIncome: "",
+            address: "",
+            dependents: "",
+            email: "",
+            familiar: "",
+        });
         setOpen(false);
         props.setOpenAddModal(false);
     }
+    const handleSubmit = async (e) => {
+        // Validation logic
+        e.preventDefault();
+        console.log(formData);
+        console.log(usersData)
+        const errors = {}
+        if (!formData.firstCellphone && !formData.email) {
+            errors.contact = "Preencha pelo menos um meio de contato (telefone ou e-mail)";
+        }
+        if (formData.cpf.length !== 11) {
+            errors.cpf = "CPF deve conter 11 dígitos";
+        } 
+        
+        if (formData.rg.length !== 10) {
+            errors.rg = "RG deve conter 10 dígitos";
+        }
+        console.log(formData.firstCellphone.length<10)
+        if (formData.firstCellphone.length < 10 & formData.firstCellphone != "") {
+            console.log("entrei")
+            errors.firstCellphone = "Telefone inválido";
+        }
+        
+        if (formData.secondCellphone.length < 10 & formData.secondCellphone != "") {
+            errors.secondCellphone = "Telefone 2 inválido";
+        }
+        if (formData.email && !isEmailValid(formData.email)) {
+            errors.email = "E-mail inválido";
+        }
+    
+        if (!formData.name || !formData.birthDate || !formData.cpf || !formData.rg) {
+            errors.requiredFields = "Preencha todos os campos obrigatórios";
+        }
+    
+        if (new Date().getFullYear() - new Date(formData.birthDate).getFullYear() < 18) {
+            if (!formData.representative) {
+                errors.representative = "Campo obrigatório para menores de idade";
+            }
+        }
+        const birthDateObject = new Date(formData.birthDate);
+        const isLeapYear = (year) => (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        const daysInMonth = [31, isLeapYear(birthDateObject.getFullYear()) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        if (
+            isNaN(birthDateObject.getTime()) ||
+            birthDateObject.getFullYear() < 1900 || birthDateObject.getFullYear() > new Date().getFullYear() ||
+            birthDateObject.getMonth() < 0 || birthDateObject.getMonth() > 11 ||
+            birthDateObject.getDate() < 1 || birthDateObject.getDate() > daysInMonth[birthDateObject.getMonth()]
+        ) {
+            errors.birthDate = "Data de Nascimento inválida";
+        }
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return;
+        } else {
+            setFormErrors({})
+            try {
+                setLoading(true);
+                addNewClient(formData)
+                handleClose()
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
     const MAX_CPF_LENGTH = 14; // 999.999.999-99
-    const MAX_PHONE_LENGTH = 12; // 5399999-9999
+    const MAX_PHONE_LENGTH = 14; // 5399999-9999
     const MAX_DATE_LENGTH = 10; // 04/06/2004
-    const MAX_RG_LENGTH = 12; // 51.309.999-99
+    const MAX_RG_LENGTH = 13; // 51.309.999-99
+    
+    // Formatting and Validating functions
 
-    // Formatting functions
-    const formatCPF = (value) => {
-        const cpf = value.replace(/\D/g, '').slice(0, MAX_CPF_LENGTH);
-        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    const isEmailValid = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     };
-
+    
     const formatPhone = (value) => {
         const phone = value.replace(/\D/g, '').slice(0, MAX_PHONE_LENGTH);
-        return phone.replace(/(\d{5})(\d{4})/, '$1-$2');
-    };
-
-    const formatDate = (value) => {
-        const date = value.replace(/\D/g, '').slice(0, MAX_DATE_LENGTH);
-        return date.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3');
+    
+        if (phone.length <= 10) {
+            return phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1)$2-$3');
+        } else {
+            return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1)$2-$3');
+        }
     };
 
     const formatRG = (value) => {
-        const rg = value.replace(/\D/g, '').slice(0, MAX_RG_LENGTH);
-        return rg.replace(/(\d{2})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        const numericString = value.replace(/\D/g, ''); // Remove non-numeric characters
+        const length = numericString.length;
+      
+        if (length <= 2) {
+          return numericString;
+        } else if (length <= 5) {
+          return `${numericString.slice(0, 2)}.${numericString.slice(2)}`;
+        } else if (length <= 8) {
+          return `${numericString.slice(0, 2)}.${numericString.slice(2, 5)}.${numericString.slice(5)}`;
+        } else if (length > 8) {
+          return `${numericString.slice(0, 2)}.${numericString.slice(2, 5)}.${numericString.slice(5, 8)}-${numericString.slice(8)}`;
+        }
+        // Add more conditions as needed for longer strings
+        return numericString; // Default case
+    };
+
+    const formatBirthDate = (birthdateString) => {
+        const numericString = birthdateString.replace(/\D/g, ''); // Remove non-numeric characters
+        const length = numericString.length;
+      
+        if (length <= 2) {
+          return numericString;
+        } else if (length <= 4) {
+          return `${numericString.slice(0, 2)}/${numericString.slice(2)}`;
+        } else if (length > 4) {
+          return `${numericString.slice(0, 2)}/${numericString.slice(2, 4)}/${numericString.slice(4)}`;
+        }
+        // Add more conditions as needed for longer strings
+      
+        return numericString; // Default case
+    };
+
+    const addDotsToCPFNumber = (numericString) => {
+        const length = numericString.length;
+        if (length <= 3) {
+          return numericString;
+        } else if (length <= 6) {
+          return `${numericString.slice(0, 3)}.${numericString.slice(3)}`;
+        } else if (length <= 9) {
+          return `${numericString.slice(0, 3)}.${numericString.slice(3, 6)}.${numericString.slice(6)}`;
+        } else if (length > 9) {
+            return `${numericString.slice(0, 3)}.${numericString.slice(3, 6)}.${numericString.slice(6, 9)}-${numericString.slice(9)}`;
+        }
+        // Add more conditions as needed for longer strings
+      
+        return numericString; // Default case
     };
 
     const [formattedCPF, setFormattedCPF] = useState("");
@@ -54,26 +202,152 @@ export default function AddClient(props) {
     const [formattedSecondPhone, setFormattedSecondPhone] = useState("");
     const [formattedDate, setFormattedDate] = useState("");
     const [formattedRG, setFormattedRG] = useState("");
-
+    
+    // Form data
     const handleCPFChange = (e) => {
-        setFormattedCPF(formatCPF(e.target.value));
+        e.preventDefault()
+        const rawCPF = e.target.value.replace(/\D/g, '');
+        const formattedCPF = addDotsToCPFNumber(rawCPF);
+        setFormattedCPF(formattedCPF);
+        setFormData((prevData) => ({
+          ...prevData,
+          cpf: rawCPF,
+        }));
     };
-
+      
     const handlePhoneChange = (e) => {
-        setFormattedPhone(formatPhone(e.target.value));
+        e.preventDefault()
+        const rawPhone = e.target.value.replace(/\D/g, "")
+        const formattedPhone = formatPhone(rawPhone);
+        setFormattedPhone(formattedPhone)
+        setFormData((prevData) => ({
+          ...prevData,
+          firstCellphone: rawPhone,
+        }));
     };
 
     const handleSecondPhoneChange = (e) => {
-        setFormattedSecondPhone(formatPhone(e.target.value));
+        e.preventDefault()
+        const rawPhone = e.target.value.replace(/\D/g, "")
+        const formattedPhone = formatPhone(rawPhone);
+        setFormattedSecondPhone(formattedPhone)
+        setFormData((prevData) => ({
+          ...prevData,
+          secondCellphone: rawPhone,
+        }));
     };
 
     const handleDateChange = (e) => {
-        setFormattedDate(formatDate(e.target.value));
+        e.preventDefault()
+        const rawDate = e.target.value.replace(/\D/g, '');
+        const formattedDate = formatBirthDate(rawDate);
+        setFormattedDate(formattedDate)
+        setFormData((prevData) => ({
+          ...prevData,
+          birthDate: formattedDate,
+        }));
     };
 
     const handleRGChange = (e) => {
-        setFormattedRG(formatRG(e.target.value));
+        e.preventDefault()
+        const rawRG = e.target.value.replace(/\D/g, '');
+        const formattedRG = formatRG(rawRG);
+        setFormattedRG(formattedRG)
+        setFormData((prevData) => ({
+          ...prevData,
+          rg: rawRG,
+        }));
     };
+
+    const handleNameChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          name: e.target.value,
+        }));
+      };
+    
+    const handleRepresentativeChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          representative: e.target.value,
+        }));
+      };
+    
+    const handleProfessionChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          profession: e.target.value,
+        }));
+      };
+
+    const handleFamilyIncomeChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          familyIncome: e.target.value,
+        }));
+      };
+    
+    const handleAddressChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          address: e.target.value,
+        }));
+      };
+    
+    const handleDependentsChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          dependents: e.target.value,
+        }));
+      };
+    
+    const handleEmailChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          email: e.target.value,
+        }));
+      };
+    
+    const handleFamiliarChange = (e) => {
+        e.preventDefault()
+        setFormData((prevData) => ({
+          ...prevData,
+          familiar: e.target.value,
+        }));
+    };
+    useEffect(() => {
+        const req = getAllUsers();
+        req.then(response => {
+        console.log(response)
+        if (response.status === 200) {
+            const usersData = response.data;
+            setUsers(usersData);
+        }
+        }).catch(error => {
+            console.log(error)
+        });
+    }, [])
+
+    useEffect(() => {
+    }, [usersData])
+
+    // const cpfExists = await checkExistingData('cpf', formData.cpf);
+    // const rgExists = await checkExistingData('rg', formData.rg);
+
+    // if (cpfExists) {
+    //   errors.cpf = "CPF já cadastrado";
+    // }
+
+    // if (rgExists) {
+    //   errors.rg = "RG já cadastrado";
+    // }
     
     return(
         <Modal
@@ -98,7 +372,10 @@ export default function AddClient(props) {
                 </button>
             </div>
 
-            <form>
+            <form onSubmit={handleSubmit}>
+                {formErrors.contact && <p className="text-red-500">{formErrors.contact}</p>}
+                {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
+                {formErrors.requiredFields && <p className="text-red-500">{formErrors.requiredFields}</p>}
                 <div className="grid gap-4 mb-4 sm:grid-cols-2">
                     <div>
                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -108,6 +385,8 @@ export default function AddClient(props) {
                             type="text"
                             name="name"
                             id="name"
+                            value={formData.name}
+                            onChange={handleNameChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                             // placeholder="Nome do assistido"
                             required
@@ -118,14 +397,16 @@ export default function AddClient(props) {
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
                             Representante
+                            {formErrors.representative && <p className="text-red-500">{formErrors.representative}</p>}
                         </label>
                         <input
                             type="text"
                             name="representative"
+                            value={formData.representative}
+                            onChange={handleRepresentativeChange}
                             id="representative"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                             // placeholder="Representante do assistido"
-                            required
                         />
                     </div>
                     <div>
@@ -133,6 +414,7 @@ export default function AddClient(props) {
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
                             RG
+                            {formErrors.rg && <p className="text-red-500">{formErrors.rg}</p>}
                         </label>
                         <input
                             type="text"
@@ -150,6 +432,7 @@ export default function AddClient(props) {
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
                             Data de Nascimento
+                            {formErrors.birthDate && <p className="text-red-500">{formErrors.birthDate}</p>}
                         </label>
                         <input
                             type="text"
@@ -167,6 +450,7 @@ export default function AddClient(props) {
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
                             CPF
+                            {formErrors.cpf && <p className="text-red-500">{formErrors.cpf}</p>}
                         </label>
                         <input
                             type="text"
@@ -185,6 +469,7 @@ export default function AddClient(props) {
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
                             Telefone
+                            {formErrors.firstCellphone && <p className="text-red-500">{formErrors.firstCellphone}</p>}
                         </label>
                         <input
                             type="text"
@@ -194,7 +479,6 @@ export default function AddClient(props) {
                             onChange={handlePhoneChange}
                             maxLength={MAX_PHONE_LENGTH}
                             className="formatted-input-phone bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
-                            required
                         />
                     </div>
                     <div>
@@ -205,8 +489,10 @@ export default function AddClient(props) {
                         </label>
                         <input
                             type="text"
-                            name="profission"
-                            id="profission"
+                            name="profession"
+                            id="profession"
+                            value={formData.profession}
+                            onChange={handleProfessionChange}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                             // placeholder="Profissão do assistido"
                             required
@@ -217,6 +503,7 @@ export default function AddClient(props) {
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                         >
                             Telefone 2
+                            {formErrors.secondCellphone && <p className="text-red-500">{formErrors.secondCellphone}</p>}
                         </label>
                         <input
                             type="text"
@@ -226,7 +513,6 @@ export default function AddClient(props) {
                             onChange={handleSecondPhoneChange}
                             maxLength={MAX_PHONE_LENGTH}
                             className="formatted-input-phone bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
-                            required
                         />
                     </div>
                     <div>
@@ -237,6 +523,8 @@ export default function AddClient(props) {
                         </label>
                         <input
                             type="text"
+                            value={formData.familyIncome}
+                            onChange={handleFamilyIncomeChange}
                             name="secondCellphone"
                             id="secondCellphone"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
@@ -250,6 +538,8 @@ export default function AddClient(props) {
                             Endereço
                         </label>
                         <input
+                            onChange={handleAddressChange}
+                            value={formData.address}
                             type="text"
                             name="address"
                             id="address"
@@ -264,11 +554,12 @@ export default function AddClient(props) {
                             Dependentes
                         </label>
                         <input
+                            onChange={handleDependentsChange}
+                            value={formData.dependents}
                             type="text"
                             name="dependents"
                             id="dependents"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
-                            required
                         />
                     </div>
                     <div>
@@ -278,11 +569,12 @@ export default function AddClient(props) {
                             E-mail
                         </label>
                         <input
+                            onChange={handleEmailChange}
+                            value={formData.email}
                             type="email"
                             name="email"
                             id="email"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
-                            required
                         />
                     </div>
                     <div></div>
@@ -293,11 +585,12 @@ export default function AddClient(props) {
                             Conhecido
                         </label>
                         <input
+                            value={formData.familiar}
+                            onChange={handleFamiliarChange}
                             type="text"
                             name="familiar"
                             id="familiar"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
-                            required
                         />
                     </div>
                 </div>
