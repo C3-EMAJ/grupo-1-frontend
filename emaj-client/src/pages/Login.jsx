@@ -73,7 +73,6 @@ export default function Home() {
   // Acão quando o botão de Login é clicado:
   const submitLoginCheck = (e) => {
     e.preventDefault();
-
     if (isLoading === false) {
       setIsLoading(true);
     }
@@ -97,6 +96,12 @@ export default function Home() {
       if (response.status === 204) {
         setIsLoading(false)
         handleAlertMessage("error", "Credenciais inválidas.");
+        return false
+      }
+      // Se o usuário estiver desativado, mas a solicitação for processada:
+      if (response.status === 205) {
+        setIsLoading(false)
+        handleAlertMessage("error", "Sua conta foi desativada, contate um administrador para reativá-la.");
         return false
       }
       // Se ocorrer um erro no processamento: 
