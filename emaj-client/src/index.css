@@ -3,21 +3,20 @@
 @tailwind utilities;
 
 
-.scroll-sidebar {
+.scroll-stylized {
   overflow: hidden;
   overflow-y: scroll;
 }
 
-.scroll-sidebar::-webkit-scrollbar {
+.scroll-stylized::-webkit-scrollbar {
   width: 3px;
   border-radius: 5px; 
 } 
 
-.scroll-sidebar::-webkit-scrollbar-thumb{
+.scroll-stylized::-webkit-scrollbar-thumb{
   background-color: #FDAE17;
   border-radius: 5px;
 }
-
 
 .logo-emaj {
     width: 100%;
