@@ -2,7 +2,7 @@ import { apiRequest } from "./requestMethods"
 
 export const loginRequest = async (user) => {
   try {
-    const res = apiRequest.post("/auth/login", user);
+    const res = await apiRequest.post("/auth/login", user);
     return res
   } catch (err) {
     return false
@@ -36,9 +36,10 @@ export const modifyPassword = async (content) => {
   }
 };
 
-export const updateUser = async (user) => {
+export const updateUser = async (id, content) => {
   try {
-    const res = apiRequest.get(`/users/update${user.id}`);
+    console.log(id, content)
+    const res = await apiRequest.put(`/users/update/${id}`, content);
     return res
   } catch (err) {
     return false
@@ -47,7 +48,7 @@ export const updateUser = async (user) => {
 
 export const getAllUsers = async () => {
   try {
-    const res = apiRequest.get("/users/find-all");
+    const res = await apiRequest.get("/users/find-all");
     return res
   } catch (err) {
     return false
@@ -63,9 +64,27 @@ export const getUser = async (id) => {
   }
 }
 
-export const addNewUser = async () => {
+export const addUser = async (newUser) => {
   try {
-    const res = apiRequest.post("/users/add", newUserInfo);
+    const res = await apiRequest.post("/users/add-user", newUser);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const deactivateUser = async (id) => {
+  try {
+    const res = await apiRequest.put(`/users/deactivate/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const activateUser = async (id) => {
+  try {
+    const res = await apiRequest.put(`/users/activate/${id}`);
     return res
   } catch (err) {
     return false
