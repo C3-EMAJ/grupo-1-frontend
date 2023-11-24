@@ -6,8 +6,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 
-import { deleteUser } from '../../data/axios/apiCalls';
-
+import { deactivateUser } from '../../data/axios/apiCalls';
 
 import { useSelector } from 'react-redux';
 
@@ -33,18 +32,18 @@ const style = {
 
 };
 
-export default function DeleteUserDialogue(props) {
+export default function DeactivateUserDialogue(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Pegando o usuário logado, para pegar as informações:
   const user = useSelector((state) => state.user.currentUser);
   //
-  
+
   // Para fechar o modal e mudar o estado do openLogouAlert (definido na SideBar e passado pelo props):
   const [openAlert, setOpen] = useState(true);
   const handleClose = () => {
     setOpen(false);
-    props.setDeleteUserDialogue(false);
+    props.setDeactivateUserDialogue(false);
   }
   //
 
@@ -62,28 +61,28 @@ export default function DeleteUserDialogue(props) {
   };
   //
 
-  // Para deletar o usuário:
-  const handleDeleteUser = async (e) => {
-    e.preventDefault()
+  // Para desativar o usuário:
+  const handleDeactivateUser = async (e) => {
+      e.preventDefault()
 
-    setIsLoading(true)
+      setIsLoading(true)
 
-    deleteUser(props.selectedUser.id)
-    .then(response => {
-      if (response.status === 200) {
-        handleAlertMessage("success", "O usuário foi deletado com sucesso.")
-        setIsLoading(false)
-        setTimeout(() => { window.location.reload() }, 500);
-      } else {
-          handleAlertMessage("error", "Algo deu errado na tentativa de deletar esse usuário.")
+      deactivateUser(props.selectedUser.id)
+      .then(response => {
+        if (response.status === 200) {
+          handleAlertMessage("success", "O usuário foi desativado com sucesso.")
           setIsLoading(false)
-      }
-      }).catch(error => {
-        handleAlertMessage("error", "Aconteceu um erro interno no servidor, tente novamente mais tarde.")
-        setIsLoading(false)
-      });
-    }
-    //
+          setTimeout(() => { window.location.reload() }, 500);
+        } else {
+            handleAlertMessage("error", "Algo deu errado na tentativa de desativar esse usuário.")
+            setIsLoading(false)
+        }
+        }).catch(error => {
+          handleAlertMessage("error", "Aconteceu um erro interno no servidor, tente novamente mais tarde.")
+          setIsLoading(false)
+        });
+  }
+  //
 
   return (
     <Modal
@@ -92,15 +91,14 @@ export default function DeleteUserDialogue(props) {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <> 
+    <>
       <Box sx={style}>
         <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
         <div className="bg-white sm:p-6 sm:pb-4">
             <div className="flex items-center justify-between pb-4 border-b rounded-t dark:border-gray-600">
-                
-
+            
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Exclusão de Usuário
+                    Desativação de Usuário
                 </h3>
 
                 <button
@@ -114,13 +112,13 @@ export default function DeleteUserDialogue(props) {
             </div>
           
             <div className=" flex sm:items-start mt-5">
-                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <ErrorOutlineOutlinedIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <ErrorOutlineOutlinedIcon className="h-6 w-6 text-purple-600" aria-hidden="true" />
                 </div>
 
                 <div className="text-left">
                     <p className="text-sm ml-3 text-gray-500 text-justify">
-                        Você deseja excluir o usuário <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedUser.name}</span>? Ao excluir você irá apagar permanentemente os registros dele(a) de forma irreversível.
+                        Você deseja desativar o usuário <span style={{ color: 'purple', fontWeight: '700' }}>{props.selectedUser.name}</span>? Ao ser desativado o usuário não conseguirá fazer o login no sistema.
                     </p>
                 </div>
             </div>
@@ -129,10 +127,11 @@ export default function DeleteUserDialogue(props) {
         <div className="bg-gray-50 py-4 px-4 text-center sm:flex sm:flex-row-reverse">
             <button
                 type="button"
-                className="inline-flex rounded-md bg-red-600 px-3 ml-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
-                onClick={handleDeleteUser}
+                className="inline-flex rounded-md bg-purple-600 px-3 ml-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500"
+                onClick={handleDeactivateUser}
+                disabled={isLoading || showAlertMessage}
             >
-                Excluir Usuário
+                Desativar Usuário
             </button>
         </div>
       </div>
@@ -143,21 +142,23 @@ export default function DeleteUserDialogue(props) {
             </Box>
         )}
       </React.Fragment>
+
+      
       </Box>
 
       <Snackbar
-            open={showAlertMessage}
-            severity="success"
-            TransitionComponent={SlideTransition}
-            anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center"
-            }}>
-            <Alert  severity={typeAlertMessage} sx={{ width: '100%' }}>
-            {alertMessage}
-            </Alert>
+        open={showAlertMessage}
+        severity="success"
+        TransitionComponent={SlideTransition}
+        anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center"
+        }}>
+        <Alert  severity={typeAlertMessage} sx={{ width: '100%' }}>
+        {alertMessage}
+        </Alert>
       </Snackbar>
-      </>      
+    </>      
     </Modal>
   )
 }
