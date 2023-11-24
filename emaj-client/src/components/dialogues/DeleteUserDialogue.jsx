@@ -1,9 +1,28 @@
+import React, { useEffect, useState } from "react";
+
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-import { useState } from 'react';
+
+import { deleteUser } from '../../data/axios/apiCalls';
+
+
+import { useSelector } from 'react-redux';
+
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import Slide from '@mui/material/Slide';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+function SlideTransition(props) {
+  return <Slide {...props} direction="up" />;
+}
 
 const style = {
   position: 'absolute',
@@ -15,6 +34,12 @@ const style = {
 };
 
 export default function DeleteUserDialogue(props) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Pegando o usuário logado, para pegar as informações:
+  const user = useSelector((state) => state.user.currentUser);
+  //
+  
   // Para fechar o modal e mudar o estado do openLogouAlert (definido na SideBar e passado pelo props):
   const [openAlert, setOpen] = useState(true);
   const handleClose = () => {
@@ -23,11 +48,42 @@ export default function DeleteUserDialogue(props) {
   }
   //
 
-  // Para apagar o usuário:
-  const handleDeleteUser = (e) => {
-    console.log("oi")
-  }
+  // Mensagens de alerta que são mostradas na parte superior:
+  const [alertMessage, setAlertMessage] = useState(""); // Mensagem;
+  const [showAlertMessage, setShowAlertMessage] = useState(false); // Exibir ou não;
+  const [typeAlertMessage, setTypeAlertMessage] = useState(''); // Tipo da mensagem: success, error, warning ou info;
+
+  const handleAlertMessage = (type, message) => {
+      setShowAlertMessage(true);
+      setAlertMessage(message);
+      setTypeAlertMessage(type);
+
+      setTimeout(() => { setShowAlertMessage(false) }, 7000); // Fechar a mensagem;
+  };
   //
+
+  // Para deletar o usuário:
+  const handleDeleteUser = async (e) => {
+    e.preventDefault()
+
+    setIsLoading(true)
+
+    deleteUser(props.selectedUser.id)
+    .then(response => {
+      if (response.status === 200) {
+        handleAlertMessage("success", "O usuário foi deletado com sucesso.")
+        setIsLoading(false)
+        setTimeout(() => { window.location.reload() }, 500);
+      } else {
+          handleAlertMessage("error", "Algo deu errado na tentativa de deletar esse usuário.")
+          setIsLoading(false)
+      }
+      }).catch(error => {
+        handleAlertMessage("error", "Aconteceu um erro interno no servidor, tente novamente mais tarde.")
+        setIsLoading(false)
+      });
+    }
+    //
 
   return (
     <Modal
@@ -36,6 +92,7 @@ export default function DeleteUserDialogue(props) {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
+      <> 
       <Box sx={style}>
         <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
         <div className="bg-white sm:p-6 sm:pb-4">
@@ -63,7 +120,7 @@ export default function DeleteUserDialogue(props) {
 
                 <div className="text-left">
                     <p className="text-sm ml-3 text-gray-500 text-justify">
-                        Você deseja excluir o usuário <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedUser.name}</span>? Ao excluir você irá apagar permanentemente os registros dele(a).
+                        Você deseja excluir o usuário <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedUser.name}</span>? Ao excluir você irá apagar permanentemente os registros dele(a) de forma irreversível.
                     </p>
                 </div>
             </div>
@@ -79,7 +136,28 @@ export default function DeleteUserDialogue(props) {
             </button>
         </div>
       </div>
-      </Box>      
+      <React.Fragment>
+        {isLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+            <CircularProgress color="primary" />
+            </Box>
+        )}
+      </React.Fragment>
+      </Box>
+
+      <Snackbar
+            open={showAlertMessage}
+            severity="success"
+            TransitionComponent={SlideTransition}
+            anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center"
+            }}>
+            <Alert  severity={typeAlertMessage} sx={{ width: '100%' }}>
+            {alertMessage}
+            </Alert>
+      </Snackbar>
+      </>      
     </Modal>
   )
 }
