@@ -1,15 +1,51 @@
+import React, { useEffect, useState } from "react";
+
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
+
 import MUIDataTable from "mui-datatables";
-import { Avatar, Box, Typography } from '@mui/material'; 
+import { Box } from '@mui/material'; 
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
 
-import DeleteUserDialogue from '../dialogues/DeleteUserDialogue';
+import ProfileModal from '../modals/ProfileModal';
+import DeactivateUserDialogue from '../dialogues/DeactivateUserDialogue';
+import EditUser from '../modals/EditUser';
 
-export default function UsersTable(props) {
+import { useSelector } from 'react-redux';
+
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import Slide from '@mui/material/Slide';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+function SlideTransition(props) {
+  return <Slide {...props} direction="up" />;
+}
+
+export default function UsersTable(props) { 
+    // Pegando o usuário logado, para pegar as informações:
+    const user = useSelector((state) => state.user.currentUser);
+    //
+
+    // Mensagens de alerta que são mostradas na parte superior:
+    const [alertMessage, setAlertMessage] = useState(""); // Mensagem;
+    const [showAlertMessage, setShowAlertMessage] = useState(false); // Exibir ou não;
+    const [typeAlertMessage, setTypeAlertMessage] = useState(''); // Tipo da mensagem: success, error, warning ou info;
+
+    const handleAlertMessage = (type, message) => {
+        setShowAlertMessage(true);
+        setAlertMessage(message);
+        setTypeAlertMessage(type);
+
+        setTimeout(() => { setShowAlertMessage(false) }, 7000); // Fechar a mensagem;
+    };
+  //
+
     // Personalizando o estilo da tabela:
     const tableTheme = createTheme({
         palette: {
@@ -71,13 +107,17 @@ export default function UsersTable(props) {
                         <RemoveRedEyeOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => seeUser(tableMeta.rowData[0])} />
                     </button>
 
-                    <button className="mx-1">
-                        <EditOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => updateUser(tableMeta.rowData[0])} />
-                    </button>
+                    {user.isAdmin && (
+                        <button className="mx-1">
+                            <EditOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => updateUser(tableMeta.rowData[0])} />
+                        </button>
+                    )}
 
-                    <button className="mx-1">
-                        <DeleteOutlineOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => deleteUser(tableMeta.rowData[0])} />
-                    </button>
+                    {user.isAdmin && (
+                        <button className="mx-1">
+                            <BedtimeOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => deactivateUser(tableMeta.rowData[0])} />
+                        </button>
+                    )}
                 </div>
             );}
         }
@@ -100,21 +140,70 @@ export default function UsersTable(props) {
     //
 
     // Abrir o diálogo para excluir um usuário:
-    const [openDeleteUserDialogue, setDeleteUserDialogue] = useState(false);
+    const [openDeactivateUserDialogue, setDeactivateUserDialogue] = useState(false);
+    //
+
+    // Abrir o modal para ediçaõ do usuário:
+    const [openEditUserModal, setEditUserModal] = useState(false);
+    //
+
+    // Abrir o perfil do usuário:
+    const [openProfileModal, setProfileModal] = useState(false);
     //
 
     //Funções que são chamadas quando clicamos nos botões que estão na coluna "Ações" da tabela:
     const seeUser = (userId) => {
-        console.log(userId)
+        setProfileModal(true)
+        setSelectedUser(props.users.find(user => user.id === userId))
     }
 
     const updateUser = (userId) => {
-        console.log(userId)
+        const userFound = props.users.find(user => user.id === userId);
+
+        if (userFound.id == 1 && user.id != 1) {
+            handleAlertMessage("warning", "Você não pode editar essa conta.")
+            return false
+        }
+
+        if (user.type == "Administrador") {
+            setSelectedUser(userFound)
+            setEditUserModal(true)
+        } else if (user.type == "Professor" && userFound.type != "Administrador") {
+            setSelectedUser(userFound)
+            setEditUserModal(true)
+        } else if (user.type == "Secretário" && (userFound.type != "Administrador" && userFound.type != "Professor" )) {
+            setSelectedUser(userFound)
+            setEditUserModal(true)
+        } else {
+            handleAlertMessage("error", "Você não tem permissão para alterar as informações deste usuário.")
+            return false
+        }
     }
     
-    const deleteUser = (userId) => {
-        setDeleteUserDialogue(true)
-        setSelectedUser(props.users.find(user => user.id === userId))
+    const deactivateUser = (userId) => {
+        const userFound = props.users.find(user => user.id === userId);
+
+        if (user.userFound == 1) {
+            handleAlertMessage("warning", "Essa conta não pode ser desativada.")
+            return false
+        } else if (user.id == userFound.id) {
+            handleAlertMessage("warning", "Desative sua conta através da página do seu perfil.")
+            return false
+        }
+
+        if (user.type == "Administrador") {
+            setSelectedUser(userFound)
+            setDeactivateUserDialogue(true)
+        } else if (user.type == "Professor" && userFound.type != "Administrador") {
+            setSelectedUser(userFound)
+            setDeactivateUserDialogue(true)
+        } else if (user.type == "Secretário" && (userFound.type != "Administrador" && userFound.type != "Professor" )) {
+            setSelectedUser(userFound)
+            setDeactivateUserDialogue(true)
+        } else {
+            handleAlertMessage("error", "Você não tem permissão para desativar esse usuário.")
+            return false
+        }
     }
     //
 
@@ -137,8 +226,23 @@ export default function UsersTable(props) {
             
         </ThemeProvider>
 
-        {openDeleteUserDialogue && <DeleteUserDialogue setDeleteUserDialogue={setDeleteUserDialogue} selectedUser={selectedUser} />}
-    
+        <Snackbar
+            open={showAlertMessage}
+            severity="success"
+            TransitionComponent={SlideTransition}
+            anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center"
+            }}>
+            <Alert  severity={typeAlertMessage} sx={{ width: '100%' }}>
+            {alertMessage}
+            </Alert>
+        </Snackbar>
+
+        {openDeactivateUserDialogue && <DeactivateUserDialogue setDeactivateUserDialogue={setDeactivateUserDialogue} selectedUser={selectedUser} handleAlert={handleAlertMessage}/>}
+        {openEditUserModal && <EditUser setEditUserModal={setEditUserModal} selectedUser={selectedUser} />}
+        {openProfileModal && <ProfileModal setProfileModal={setProfileModal} selectedUser={selectedUser} />}
+
     </Box>
     );
 }
