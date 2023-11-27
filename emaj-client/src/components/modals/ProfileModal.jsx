@@ -67,7 +67,7 @@ export default function ProfileModal(props) {
                 <div className="bg-white rounded-lg shadow-xl pb-8">
                     <div className="flex flex-col items-center">
                         <img
-                            src={props.selectedUser.img || "https://i.imgur.com/oYEFKb1.png"}                        className="w-40 border-4 border-white rounded-full"
+                            src={props.selectedUser.UserImage.url || "https://i.imgur.com/oYEFKb1.png"}                        className="w-40 border-4 border-white rounded-full"
                             alt="Profile"
                         />
                         <div className="flex items-center space-x-2 mt-2">
