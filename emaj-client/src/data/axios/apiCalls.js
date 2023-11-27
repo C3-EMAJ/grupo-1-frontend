@@ -64,6 +64,15 @@ export const getUser = async (id) => {
   }
 }
 
+export const getUpdatedUser = async (id) => {
+  try {
+    const res = await apiRequest.get(`/users/find-updated/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+}
+
 export const addUser = async (newUser) => {
   try {
     const res = await apiRequest.post("/users/add-user", newUser);
@@ -94,6 +103,25 @@ export const activateUser = async (id) => {
 export const deleteUser = async (id) => {
   try {
     const res = await apiRequest.delete(`/users/delete/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const updateUserImage = async (id, data) => {
+  try {
+    console.log(data)
+    const res = await apiRequest.put(`/upload/user-image/${id}`, data);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const deleteUserImage = async (id) => {
+  try {
+    const res = await apiRequest.delete(`/upload/user-image/${id}`);
     return res
   } catch (err) {
     return false
