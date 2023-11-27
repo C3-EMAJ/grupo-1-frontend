@@ -37,7 +37,7 @@ export default function Perfil() {
                     </div>
                     <div className="flex flex-col items-center -mt-20">
                     <img
-                        src={user.img || "https://i.imgur.com/oYEFKb1.png"}                        className="w-40 border-4 border-white rounded-full"
+                        src={user.UserImage.url || "https://i.imgur.com/oYEFKb1.png"}                        className="w-40 h-40 border-4 border-white rounded-full"
                         alt="Profile"
                     />
                     <div className="flex items-center space-x-2 mt-2">

@@ -85,12 +85,12 @@ export default function UsersTable(props) {
         { name: 'id', label: "ID"  , options: {filter: false} },
         { name: 'img', label: 'Foto', options: {
             filter: false,
-            customBodyRender: (value, tableMeta, updateValue) => {   
-                const user = props.users[tableMeta.rowIndex]; // Acesse o objeto de usuário com base no índice da linha
+            customBodyRender: (value, tableMeta, updateValue) => {      
+                const user = props.users[tableMeta.rowIndex]
                 return (
                     <img
                         className="object-cover w-8 h-8 rounded-full"
-                        src={user.img || "https://i.imgur.com/oYEFKb1.png"}
+                        src={user.UserImage.url}
                     />
                 );}
         } },
@@ -160,11 +160,17 @@ export default function UsersTable(props) {
     const updateUser = (userId) => {
         const userFound = props.users.find(user => user.id === userId);
 
+        // Não deixando alterar as informações do primeiro usuário e não deixando alterar as próprias informações:
         if (userFound.id == 1 && user.id != 1) {
             handleAlertMessage("warning", "Você não pode editar essa conta.")
             return false
+        } else if (user.id == userFound.id) {
+            handleAlertMessage("warning", "Altere suas informações através da página do seu perfil.")
+            return false
         }
+        //
 
+        // Definindo "níveis de permissão":
         if (user.type == "Administrador") {
             setSelectedUser(userFound)
             setEditUserModal(true)
@@ -178,11 +184,13 @@ export default function UsersTable(props) {
             handleAlertMessage("error", "Você não tem permissão para alterar as informações deste usuário.")
             return false
         }
+        //
     }
     
     const deactivateUser = (userId) => {
         const userFound = props.users.find(user => user.id === userId);
 
+        // Não deixando desativar o primeiro usuário e desativar o próprio perfil:
         if (user.userFound == 1) {
             handleAlertMessage("warning", "Essa conta não pode ser desativada.")
             return false
@@ -190,7 +198,9 @@ export default function UsersTable(props) {
             handleAlertMessage("warning", "Desative sua conta através da página do seu perfil.")
             return false
         }
+        //
 
+        // Definindo "níveis de permissão":
         if (user.type == "Administrador") {
             setSelectedUser(userFound)
             setDeactivateUserDialogue(true)
@@ -204,6 +214,7 @@ export default function UsersTable(props) {
             handleAlertMessage("error", "Você não tem permissão para desativar esse usuário.")
             return false
         }
+        //
     }
     //
 

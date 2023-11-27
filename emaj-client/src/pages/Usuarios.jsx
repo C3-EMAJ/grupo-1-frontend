@@ -100,12 +100,12 @@ export default function Usuarios() {
     }
   };
 
-  function organizeUsers(fetchedUsers) {
+  function organizeUsers(usersData) {
     var activeUsersOnFetch = [];
     var disabledUsersOnFetch = [];
 
     // Separando os usuários ativos dos usuários desativados:
-    fetchedUsers.forEach((item) => {
+    usersData.map((item, index) => {
       if (item.isActive == true) {
         activeUsersOnFetch.push(item);
       } else {
