@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/emaj-api/";
+const BASE_URL = "https://emaj-api.onrender.com/emaj-api/";
 
 export const apiRequest = axios.create({
   baseURL: BASE_URL,

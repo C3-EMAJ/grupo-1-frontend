@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import CodeIcon from '@mui/icons-material/Code';
-import LockIcon from '@mui/icons-material/Lock';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 
@@ -79,37 +78,36 @@ export default function ResetPassword(props) {
   //
 
   // Caixa de alteração de senha:
+  const [showEnterCodeBox, setEnterCodeBox] = useState(false);
   const [showNewPasswordBox, setNewPasswordBox] = useState(false); // Exibir caixa de alteração de senha
   const [newPassword, setNewPassword] = useState(""); // Senha a a ser digitada
   const [showPassword, setShowPassword] = useState(true); // Deixar a senha visível (se for true: password, se for false: text):
   //
 
-  // Quando o botão do formulário é ativado geramos um código:
-  const submitReset = (e) => {
+  // Checando se o email inserido é válido, se for geramos um código e enviamos por email:
+  const checkEnteredEmail = (e) => {
     e.preventDefault();
 
     setIsLoading(true)
 
-    if (code === false) {
-      const randomCode = generateRandomCode();
-      setCode(randomCode);
+    const emailRegex = /^[a-zA-Z0-9._-]+@(gmail\.com|furg\.br)$/
+    if (!emailRegex.test(userEmail) || userEmail.length < 7) {
+      setIsLoading(false)
+      handleAlertMessage("warning", "Insira um email válido (@gmail.com ou @furg.br).")
+
+      return false;
     }
-  }
-  //
 
-  // Se o código for gerado, testamos se o email informado é válido:
-  useEffect(() => { // useEffect checa a todo momento se o código foi gerado
-    checkEnteredEmail();
-  }, [code]);
+    var randomCode = generateRandomCode();
+    setCode(randomCode);
 
-  const checkEnteredEmail = () => {
-    if (code != false && showNewPasswordBox == false){
+    if (showNewPasswordBox == false){
       const testEmail = checkEmail({ "email": userEmail });
         testEmail.then(response => {
         if (response.status === 200){
           setIsLoading(false);
-          codeEmail({"email":userEmail, "code":code});
-          setShowPassword(true);
+          codeEmail({"email":userEmail, "code":randomCode});
+          setEnterCodeBox(true);
 
         } else {
           setIsLoading(false);
@@ -132,6 +130,7 @@ export default function ResetPassword(props) {
     if (code === codeEnteredByUser) {
       setCode(false);
       setCodeEnteredByUser("");
+      setEnterCodeBox(false);
       setNewPasswordBox(true);
 
     }
@@ -217,32 +216,32 @@ export default function ResetPassword(props) {
         
         <div className="p-4 sm:p-4">
 
-          <div className="mt-4 mb-4">
+          <div className="">
             <form>
               <div className="grid gap-y-4">
                 
                 <React.Fragment>
-                  {(code != false && showNewPasswordBox == false) ? (
+                  {(showEnterCodeBox && showNewPasswordBox == false) ? (
                     
-                    <div className="flex flex-col items-center bg-white text-gray-700 border border-solid border-lightgray rounded-md text-center">
-                      <div className="mb-4 mt-4 border-none">Insira o código que foi enviado para o seu e-mail:</div>
+                    <div className="flex flex-col items-center bg-white text-gray-700 text-center">
+                      <div className="mb-4 mt-4 border-none text-md text-gray-800">Insira o código que foi enviado para o seu e-mail:</div>
  
                       <div className="mb-4 w-60 border border-lightgray rounded-md flex items-center">
                         
                         <CodeIcon style={{ color: "gray"}}/>                      
-                        <input className="h-10 p-5" placeholder="Código" value={codeEnteredByUser} onChange={(e) => setCodeEnteredByUser(e.target.value)}/>
+                        <input className="h-10 w-48 p-5  focus:ring-opacity-0 focus:outline-none" placeholder="Código" value={codeEnteredByUser} onChange={(e) => setCodeEnteredByUser(e.target.value)}/>
                       
                       </div>
                       <div className="flex flex-col justify-between">
-                        <button className="border-none h-10 w-60 mb-2 bg-green-400 rounded-md text-white cursor-pointer" onClick={checkResetCode}>Confirmar</button>
-                        <button className="border-none h-10 mb-4 bg-red-400 rounded-md text-white cursor-pointer"  onClick={cancelReset}>Cancelar</button>
+                        <button className="border-none h-10 w-60 mb-2 bg-yellow-400 rounded-md text-white cursor-pointer font-medium hover:bg-yellow-500" onClick={checkResetCode}>Confirmar</button>
+                        <button className="border-none h-10 mb-4 bg-red-500 rounded-md text-white cursor-pointer font-medium hover:bg-red-600"  onClick={cancelReset}>Cancelar</button>
                       </div>
                     </div>
 
                   ) : (code == false && showNewPasswordBox == true) ? (
 
-                    <div className="flex flex-col items-center mb-15 bg-white text-gray-700 border border-solid border-lightgray rounded-md text-center">
-                      <div className="mb-4 mt-4 text-sm text-gray-800 dark:text-gray-400">Insira a nova senha desejada:</div>
+                    <div className="flex flex-col items-center mb-15 bg-white text-gray-700rounded-md text-center">
+                      <div className="mb-4 mt-4 text-md text-gray-800">Insira a nova senha desejada:</div>
                       
                       <div>
                         <label className="relative w-60 text-gray-400 focus-within:text-gray-600 block mb-4">
@@ -271,30 +270,33 @@ export default function ResetPassword(props) {
 
                       </div>
                       <div className="flex flex-col justify-between">
-                        <button className="border-none h-10 w-60 mb-2 bg-green-400 rounded-md text-white cursor-pointer" onClick={checkNewPassword}>Confirmar</button>
-                        <button className="border-none h-10 mb-4 bg-red-400 rounded-md text-white cursor-pointer"  onClick={cancelReset}>Cancelar</button>
+                        <button className="border-none h-10 w-60 mb-2 bg-yellow-400 rounded-md text-white cursor-pointer font-medium hover:bg-yellow-500" onClick={checkNewPassword}>Confirmar</button>
+                        <button className="border-none h-10 mb-4 bg-red-500 rounded-md text-white cursor-pointer font-medium hover:bg-red-600"  onClick={cancelReset}>Cancelar</button>
                       </div>
                     </div>
 
                   ) : (
                     <div className="text-center">
                       <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">Esqueceu a sua senha?</h1>
-                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      <p className="mt-2 text-sm text-gray-600">
                         Insira o seu email abaixo e siga as instruções para recuperá-la.
                       </p>
 
-                      <div className="mt-2">
-                        <input className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-black-300 bg-white border rounded-lg focus:border-yellow-400 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300" 
-                        type="email" placeholder="Email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)}/>
-                      </div>
-                      <button
-                        onClick={submitReset}
-                        disabled={isLoading}
-
-                        className="flex items-center mt-4 w-full h-11 justify-center rounded-md bg-yellow-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      >
-                          Recuperar Senha
-                      </button>
+                      <form>
+                        <div className="mt-2">
+                          <input className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-black-300 bg-white border rounded-lg focus:border-yellow-400 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300" 
+                          type="email"
+                          name="email" required placeholder="Email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)}/>
+                        </div>
+                        <button
+                          onClick={(checkEnteredEmail || code)}
+                          disabled={isLoading}
+                          type="submit"
+                          className="flex items-center mt-4 w-full h-11 justify-center rounded-md bg-yellow-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                            Recuperar Senha
+                        </button>
+                      </form>
 
                     </div>
 
