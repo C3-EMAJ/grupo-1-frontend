@@ -1,6 +1,6 @@
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-
+import { addNewClient } from '../../data/axios/apiCalls';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { getAllUsers } from "../../data/axios/apiCalls";
@@ -67,6 +67,8 @@ export default function AddClient(props) {
         // Validation logic
         e.preventDefault();
         formData.representative = representativeState
+        formData.dependents = dependents
+        console.log(formData)
         const errors = {}
         if (!formData.firstCellphone && !formData.email) {
             errors.contact = "Preencha pelo menos um meio de contato (telefone ou e-mail)";
@@ -409,9 +411,11 @@ export default function AddClient(props) {
     // }
     
     const [addDependents, setAddDependents] = useState(false);
+    // Botão de "+ adicionar dependentes"
     const handleSetAddDependents = () => {
         setDependentsError(false)
         setAddDependents(!addDependents)
+        setNewDependent({ name: '', age: '' });
     }
     const [dependents, setDependents] = useState([]);
     const [newDependent, setNewDependent] = useState({ name: '', age: '' });
@@ -426,16 +430,18 @@ export default function AddClient(props) {
         setNewDependent((prevDependent) => ({ ...prevDependent, name: e.target.value }));
     };
     const [dependentsError, setDependentsError] = useState(false)
+    // Adiciona o dependente a lista de dependente caso ele esteja valido
     const handleAddDependent = () => {
         if (newDependent.name.length < 3 || newDependent.age == "" || newDependent.age > 140 || newDependent.age < 0) {
             setDependentsError(true)
         } else {
             setDependentsError(false)
+            // Cria um noo dependente na lista de dependentes
             setDependents((prevDependents) => [...prevDependents, newDependent]);
             setNewDependent({ name: '', age: '' });
         }
     };
-
+    // Função para deletar os dependentes
     const deleteDependent = (index) => {
         const updatedDependents = dependents.filter((_, i) => i !== index);
         setDependents(updatedDependents);
@@ -444,6 +450,10 @@ export default function AddClient(props) {
     const [modalPosition, setModalPosition] = useState(0)
     const handleModalPosition = () => {
         setModalPosition(0)
+    }
+    const handleModalPosition2 = () => {
+        setModalPosition(2)
+        handleSubmit()
     }
     const [representativeState, setRepresentative] = useState(0)
     return(
@@ -693,6 +703,7 @@ export default function AddClient(props) {
                                             style={{cursor:"pointer", marginTop:"10px"}}
                                             className="text-white inline-flex mt- items-center bg-yellow-600 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
                                         >
+                                            {}
                                             <AddIcon/>
                                             Adicionar Dependentes
                                         </div>
@@ -839,6 +850,7 @@ export default function AddClient(props) {
                             <button
                                 type="submit"
                                 className="text-white inline-flex mt- items-center bg-yellow-500 hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+                                onClick={handleModalPosition2}
                             >
                                 <AddIcon/>
                                 Adicionar Assistido
@@ -848,6 +860,6 @@ export default function AddClient(props) {
                 </div>
                 )}
                 </Box>      
-        </Modal>
+            </Modal>
     );
 }

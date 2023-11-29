@@ -99,3 +99,13 @@ export const deleteUser = async (id) => {
     return false
   }
 };
+
+
+export const addNewClient = async (newClient) => {
+  try {
+    const res = await apiRequest.post("/clients/add-client", newClient);
+    return res
+  } catch (err) {
+    return false
+  }
+};
