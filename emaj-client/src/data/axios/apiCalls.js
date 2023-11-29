@@ -109,6 +109,7 @@ export const deleteUser = async (id) => {
   }
 };
 
+
 export const updateUserImage = async (id, data) => {
   try {
     console.log(data)
@@ -122,6 +123,11 @@ export const updateUserImage = async (id, data) => {
 export const deleteUserImage = async (id) => {
   try {
     const res = await apiRequest.delete(`/upload/user-image/${id}`);
+
+export const addNewClient = async (newClient) => {
+  try {
+    const res = await apiRequest.post("/clients/add-client", newClient);
+
     return res
   } catch (err) {
     return false
