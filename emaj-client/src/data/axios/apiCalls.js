@@ -124,6 +124,11 @@ export const deleteUserImage = async (id) => {
   try {
     const res = await apiRequest.delete(`/upload/user-image/${id}`);
 
+  } catch (err) {
+    return false
+  }
+}
+
 export const addNewClient = async (newClient) => {
   try {
     const res = await apiRequest.post("/clients/add-client", newClient);
