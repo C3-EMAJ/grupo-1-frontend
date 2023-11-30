@@ -140,7 +140,7 @@ export default function Home() {
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             className="mx-auto h-10 w-auto"
-            src="../../public/logo-login.png"
+            src="./logo-login.png"
             alt="Escritório Modelo de Acessoria Jurídica - FURG"
             style={{ width: "25rem", height: "10rem" }}
           />
@@ -168,7 +168,8 @@ export default function Home() {
               <label className="relative text-gray-400 focus-within:text-gray-600 block">
                 <input
                   className="flex w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-500 bg-white border rounded-lg focus:border-yellow-400 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
-                  type={showPassword ? "password" : "text"}
+                  
+                  
                   value={password} onChange={(e) => setPassword(e.target.value)}
                 />
                 <React.Fragment>
