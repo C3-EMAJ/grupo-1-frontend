@@ -29,15 +29,25 @@ export default function AddClient(props) {
         secondCellphone: "",
         profession: "",
         familyIncome: "",
-        address: "",
-        dependents: "",
         email: "",
         familiar: "",
+        cep: "",
+        street: "",
+        number: "",
+        complement: ""
     });
 
     const [usersData, setUsers] = useState({});
 
-    const [formErrors, setFormErrors] = useState({representative: ""});
+    const [formErrors, setFormErrors] = useState({
+        representative: "",
+        rg: "",
+        cpf: "",
+        firstCellphone: "",
+        secondCellphone: "",
+        birthDate: ""
+    });
+
     const [loading, setLoading] = useState(false);
 
     const [openAlert, setOpen] = useState(true);
@@ -102,15 +112,22 @@ export default function AddClient(props) {
                 console.log(formData.representative)
             }
         }
-        const birthDateObject = new Date(formData.birthDate);
-        const isLeapYear = (year) => (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-        const daysInMonth = [31, isLeapYear(birthDateObject.getFullYear()) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+        const dateParts = formData.birthDate.split("/");
+        const day = parseInt(dateParts[0], 10);
+        const month = parseInt(dateParts[1], 10) - 1; // Mês é zero-indexed
+        const year = parseInt(dateParts[2], 10);
+        
+        const birthDateObject = new Date(year, month, day);
+        
+        const isLeapYear = (year) => (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
         if (
             isNaN(birthDateObject.getTime()) ||
-            birthDateObject.getFullYear() < 1900 || birthDateObject.getFullYear() > new Date().getFullYear() ||
-            birthDateObject.getMonth() < 0 || birthDateObject.getMonth() > 11 ||
-            birthDateObject.getDate() < 1 || birthDateObject.getDate() > daysInMonth[birthDateObject.getMonth()]
+            year < 1900 || year > new Date().getFullYear() ||
+            month < 0 || month > 11 ||
+            day < 1 || day > daysInMonth[month]
         ) {
             errors.birthDate = "Data de Nascimento inválida";
         }
@@ -120,30 +137,6 @@ export default function AddClient(props) {
         } else {
             setFormErrors({})
             setModalPosition(1)
-            if (modalPosition == 1) {
-                try {
-                    if (formData.cep.length < 8) {
-                        setCepError(true)
-
-                    } else {
-                        setCepError(false)
-                        setModalPosition(2)
-                    }
-                } catch (err) {
-                    console.log(err)                 
-                }
-            } else
-            if (modalPosition == 2){
-                try {
-                    setLoading(true);
-                    addNewClient(formData)
-                    handleClose()
-                } catch (error) {
-                    console.log(error)
-                } finally {
-                    setLoading(false)
-                }
-            }
         }
     }
     const [cepError, setCepError] = useState(false)
@@ -422,7 +415,7 @@ export default function AddClient(props) {
     
     const handleDependentsAgeChange = (e) => {
         e.preventDefault()
-        setNewDependent((prevDependent) => ({ ...prevDependent, age: e.target.value }));
+        setNewDependent((prevDependent) => ({ ...prevDependent, age: parseInt(e.target.value) }));
     };
   
     const handleDependentsNameChange = (e) => {
@@ -436,7 +429,7 @@ export default function AddClient(props) {
             setDependentsError(true)
         } else {
             setDependentsError(false)
-            // Cria um noo dependente na lista de dependentes
+            // Cria um novo dependente na lista de dependentes
             setDependents((prevDependents) => [...prevDependents, newDependent]);
             setNewDependent({ name: '', age: '' });
         }
@@ -451,11 +444,55 @@ export default function AddClient(props) {
     const handleModalPosition = () => {
         setModalPosition(0)
     }
+    const [streetError, setStreetError] = useState(false)
+    const [numberError, setNumberError] = useState(false)
+    
+
     const handleModalPosition2 = () => {
-        setModalPosition(2)
-        handleSubmit()
+        if (modalPosition == 1) {
+            try {
+                if (formData.cep.length < 8) {
+                    setCepError(true)
+                    
+                } if (formData.number === "") {
+                    setNumberError(true)
+                } if (formData.setStreetError === "" ) {
+                    setStreetError(true)
+                } else {
+                    setCepError(false)
+                    formData.familyIncome = parseInt(formData.familyIncome)
+                    if (formData.email === "") {
+                        formData.email = null
+                    }
+                    if (formData.secondCellphone === "") {
+                        formData.secondCellphone = null
+                    }
+                    if (formData.firstCellphone === "") {
+                        formData.firstCellphone = null
+                    }
+                    if (formData.familiar === "") {
+                        formData.familiar = null
+                    }
+                    if(formData.email == "") {
+                        formData.email = null
+                    }
+                    try {
+                        setLoading(true);
+                        console.log(formData)
+                        addNewClient(formData)
+                        handleClose()
+                    } catch (error) {
+                        console.log(error)
+                    } finally {
+                        setLoading(false)
+                    }
+                }
+            } catch (err) {
+                console.log(err)                 
+            }
+        }
     }
-    const [representativeState, setRepresentative] = useState(0)
+    const [representativeState, setRepresentative] = useState()
     return(
             <Modal
                 open={openAlert}
@@ -487,7 +524,7 @@ export default function AddClient(props) {
                                 <div className="grid gap-4 mb-4 sm:grid-cols-2">
                                     <div>
                                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Nome
+                                            Nome*
                                         </label>
                                         <input
                                             type="text"
@@ -504,8 +541,7 @@ export default function AddClient(props) {
                                         <label
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            RG
-                                            {formErrors.rg && <p className="text-red-500">{formErrors.rg}</p>}
+                                            {formErrors.rg !== "" ? (<span className="text-red-500" > {formErrors.rg} </span>) : (<span>RG*</span>) }
                                         </label>
                                         <input
                                             type="text"
@@ -522,8 +558,7 @@ export default function AddClient(props) {
                                         <label
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            Data de Nascimento
-                                            {formErrors.birthDate && <p className="text-red-500">{formErrors.birthDate}</p>}
+                                            {formErrors.birthDate !== "" ? (<span className="text-red-500" > {formErrors.birthDate} </span>) : (<span>Data de Nascimento*</span>) }                                        
                                         </label>
                                         <input
                                             type="text"
@@ -540,8 +575,7 @@ export default function AddClient(props) {
                                         <label
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            CPF
-                                            {formErrors.cpf && <p className="text-red-500">{formErrors.cpf}</p>}
+                                            {formErrors.cpf !== "" ? (<span className="text-red-500" > {formErrors.cpf} </span>) : (<span>CPF*</span>) }                                        
                                         </label>
                                         <input
                                             type="text"
@@ -558,8 +592,8 @@ export default function AddClient(props) {
                                         <label
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            Telefone
-                                            {formErrors.firstCellphone && <p className="text-red-500">{formErrors.firstCellphone}</p>}
+                                            {formErrors.firstCellphone !== "" ? (<span className="text-red-500" > {formErrors.firstCellphone} </span>) : (<span>Telefone*</span>) }                                        
+                                        
                                         </label>
                                         <input
                                             type="text"
@@ -575,8 +609,7 @@ export default function AddClient(props) {
                                         <label
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            Telefone 2
-                                            {formErrors.secondCellphone && <p className="text-red-500">{formErrors.secondCellphone}</p>}
+                                            {formErrors.secondCellphone !== "" ? (<span className="text-red-500" > {formErrors.secondCellphone} </span>) : (<span>Telefone 2*</span>) }                                        
                                         </label>
                                         <input
                                             type="text"
@@ -592,7 +625,7 @@ export default function AddClient(props) {
                                         <label
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            E-mail
+                                            E-mail*
                                         </label>
                                         <input
                                             onChange={handleEmailChange}
@@ -608,7 +641,7 @@ export default function AddClient(props) {
                                         <label
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                         >
-                                            Profissão
+                                            Profissão*
                                         </label>
                                         <input
                                             type="text"
@@ -628,7 +661,7 @@ export default function AddClient(props) {
                                             Renda Familiar
                                         </label>
                                         <input
-                                            type="text"
+                                            type="number"
                                             value={formData.familyIncome}
                                             onChange={handleFamilyIncomeChange}
                                             name="secondCellphone"
@@ -778,8 +811,7 @@ export default function AddClient(props) {
                             <div className="grid gap-4 mb-4 sm:grid-cols-2">
                                 <div>
                                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        CEP
-                                        {cepError && <p className="text-red-500">Insira o CEP da forma correta</p>}
+                                        {cepError ? (<span className="text-red-500" > Insira o CEP da forma correta </span>) : (<span>CEP</span>) }
                                     </label>
                                     <input
                                         type="text"
@@ -795,7 +827,7 @@ export default function AddClient(props) {
                                 </div>
                                 <div>
                                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        Rua
+                                        {streetError ? (<span className="text-red-500" > Insira uma Rua </span>) : (<span>Rua</span>) }
                                     </label>
                                     <input
                                         type="text"
@@ -810,7 +842,7 @@ export default function AddClient(props) {
                                 </div>
                                 <div>
                                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        Número
+                                        {numberError ? (<span className="text-red-500" > Insira o número da casa </span>) : (<span>Número</span>) }
                                     </label>
                                     <input
                                         type="number"
@@ -836,7 +868,6 @@ export default function AddClient(props) {
                                         onChange={handleComplementChange}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:border-yellow-400 dark:focus:border-yellow-300 focus:ring-opacity-30 focus:outline-none focus:ring focus:ring-yellow-300"
                                         // placeholder="Nome do assistido"
-                                        required
                                     />
                                 </div>
                             </div>
