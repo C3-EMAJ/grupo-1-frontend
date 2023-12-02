@@ -72,7 +72,7 @@ export default function Sidebar() {
 
                 <div className="flex flex-col items-center mb-10 -mx-2 h-2/6">
                     <NavLink to="/perfil"> 
-                        <img className={`cursor-pointer ${!open && "object-cover w-11 h-11 mx-2 rounded-full"} ${open && "object-cover w-32 h-32 mx-2 rounded-full"}`} src={user.UserImage.url || "https://i.imgur.com/oYEFKb1.png"} />
+                        <img className={`cursor-pointer ${!open && "object-cover w-11 h-11 mx-2 rounded-full"} ${open && "object-cover w-32 h-32 mx-2 rounded-full"}`} src={"https://i.imgur.com/oYEFKb1.png" || "https://i.imgur.com/oYEFKb1.png"} />
                     </NavLink>
                     {open &&(
                         <>

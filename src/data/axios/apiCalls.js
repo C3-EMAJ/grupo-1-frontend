@@ -138,3 +138,30 @@ export const addNewClient = async (newClient) => {
     return false
   }
 };
+
+export const getAllClients = async () => {
+  try {
+    const res = await apiRequest.get("/clients/find-all");
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const deactivateClient = async (id) => {
+  try {
+    const res = await apiRequest.put(`/clients/deactivate/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const activateClient = async (id) => {
+  try {
+    const res = await apiRequest.put(`/clients/activate/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
