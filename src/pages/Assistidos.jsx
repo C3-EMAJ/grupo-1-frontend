@@ -54,6 +54,7 @@ export default function Assistidos() {
   }
 
   const formatClients = (allClients) => {
+    console.log(formatClients)
     const formattedClients = []
     const activeClientsOnFetch = []
     const disabledClientsOnFetch = []
@@ -62,10 +63,22 @@ export default function Assistidos() {
         id: item.id,
         name: item.name,
         cpf: item.cpf,
+        rg: item.rg,
         email: item.ClientContact.email,
         phone: item.ClientContact.phone,
+        phoneTwo: item.ClientContact.phoneTwo,
         birthday: new Date(item.birthday).toLocaleDateString('pt-BR'),
-        isActive: item.isActive
+        isActive: item.isActive,
+        familiar: item.familiar,
+        represetiveId: item.represetiveId,
+        cep: item.ClientAddress.cep,
+        street: item.ClientAddress.street,
+        number: item.ClientAddress.number,
+        complement: item.ClientAddress.complement,
+        familyIncome: item.CientSocioeconomicInformation.familyIncome,
+        dependents: item.ClientDependent,
+        profession: item.CientSocioeconomicInformation.profession,
+        acquaintance: item.CientSocioeconomicInformation.acquaintance
       })
     })
     formattedClients.map((item, index) => {

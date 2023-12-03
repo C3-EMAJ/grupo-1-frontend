@@ -15,7 +15,7 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 700,
-  };
+};
 
 export default function AddClient(props) {
     // Para fechar o modal e mudar o estado do openLogouAlert (definido na SideBar e passado pelo props):
@@ -30,7 +30,7 @@ export default function AddClient(props) {
         profession: "",
         familyIncome: "",
         email: "",
-        familiar: "",
+        acquaitance: "",
         cep: "",
         street: "",
         number: "",
@@ -64,7 +64,7 @@ export default function AddClient(props) {
             profession: "",
             familyIncome: "",
             email: "",
-            familiar: "",
+            acquaitance: "",
             cep: "",
             street: "",
             number: "",
@@ -324,7 +324,7 @@ export default function AddClient(props) {
         e.preventDefault()
         setFormData((prevData) => ({
           ...prevData,
-          familiar: e.target.value,
+          acquaitance: e.target.value,
         }));
     };
     const [formattedCEP, setFormattedCEP] = useState("")
@@ -453,12 +453,14 @@ export default function AddClient(props) {
             try {
                 if (formData.cep.length < 8) {
                     setCepError(true)
-                    
                 } if (formData.number === "") {
                     setNumberError(true)
                 } if (formData.setStreetError === "" ) {
                     setStreetError(true)
-                } else {
+                } if (formData.dependents === "null") {
+                    formData.dependents = []
+                } 
+                else {
                     setCepError(false)
                     formData.familyIncome = parseInt(formData.familyIncome)
                     if (formData.email === "") {
@@ -470,8 +472,8 @@ export default function AddClient(props) {
                     if (formData.firstCellphone === "") {
                         formData.firstCellphone = null
                     }
-                    if (formData.familiar === "") {
-                        formData.familiar = null
+                    if (formData.acquaitance === "") {
+                        formData.acquaitance = null
                     }
                     if(formData.email == "") {
                         formData.email = null
@@ -689,7 +691,7 @@ export default function AddClient(props) {
                                             Conhecido
                                         </label>
                                         <input
-                                            value={formData.familiar}
+                                            value={formData.acquaitance}
                                             onChange={handleFamiliarChange}
                                             type="text"
                                             name="familiar"

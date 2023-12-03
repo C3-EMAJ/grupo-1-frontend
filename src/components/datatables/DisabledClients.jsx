@@ -140,7 +140,10 @@ export default function DisabledClientsTable(props) {
         </ThemeProvider>
 
         {openActivateClientDialogue && <ActivateClientDialogue setActivateClientDialogue={setActivateClientDialogue} selectedClient={selectedClient} />}
-        {openDeleteClientDialogue && <DeleteClientDialogue setDeleteClientDialogue={setDeleteClientDialogue} selectedClient={selectedClient} />}
+        {openDeleteClientDialogue && <DeleteClientDialogue 
+                                                        setDeleteClientDialogue={setDeleteClientDialogue} 
+                                                        selectedClient={selectedClient} 
+                                                    />}
 
     </Box>
     );

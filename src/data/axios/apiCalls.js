@@ -165,3 +165,39 @@ export const activateClient = async (id) => {
     return false
   }
 };
+
+export const deleteClient = async (id) => {
+  try {
+    const res = await apiRequest.delete(`/clients/delete/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const getClient = async (id) => {
+  try {
+    const res = await apiRequest.get(`/clients/find/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+}
+
+export const updateClient = async (id, updateType, content) => {
+  try {
+    const res = await apiRequest.put(`/clients/update/${id}/${updateType}`, content);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const getUpdatedClient = async (id) => {
+  try {
+    const res = await apiRequest.get(`/clients/find-updated/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+}

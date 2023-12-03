@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import DeactivateClientDialogue from '../dialogues/DeactivateClientDialogue';
+import EditClient from '../modals/EditClient';
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -115,11 +116,19 @@ export default function ClientTable(props) {
 
     // Abrir o diálogo para excluir um assistido:
     const [openDeactivateClientDialogue, setDeactivateClientDialogue] = useState(false);
+    const [openEditClientModal, setEditClientModal] = useState(false);
 
     //Funções que são chamadas quando clicamos nos botões que estão na coluna "Ações" da tabela:
-
+    
     const updateClient = (clientId) => {
-        console.log(clientId)
+        const clientFound = props.clients.find(client => client.id === clientId)
+        if (user.type !== "Aluno") {
+            setSelectedClient(clientFound)
+            setEditClientModal(true)
+        } else {
+            handleAlertMessage("error", "Você não tem permissão para editar esse assistido.")
+            return false
+        }
     }
     
     const deactivateClient = (clientId) => {
@@ -131,10 +140,8 @@ export default function ClientTable(props) {
             handleAlertMessage("error", "Você não tem permissão para desativar esse assistido.")
             return false
         }
-        // setDeleteClientDialogue(true)
-        // setSelectedClient(props.clients.find(client => client.id === clientId))
     }
-    //
+
 
     return (
         <Box
@@ -169,7 +176,7 @@ export default function ClientTable(props) {
         </Snackbar>
 
         {openDeactivateClientDialogue && <DeactivateClientDialogue setDeactivateClientDialogue={setDeactivateClientDialogue} selectedClient={selectedClient} />}
-        
+        {openEditClientModal && <EditClient setEditClientModal={setEditClientModal} selectedClient={selectedClient} />}
     </Box>
     );
 }

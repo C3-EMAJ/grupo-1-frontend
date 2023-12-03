@@ -6,10 +6,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 
-import { deleteUser } from '../../data/axios/apiCalls';
-
-
-import { useSelector } from 'react-redux';
+import { deleteClient } from '../../data/axios/apiCalls';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
@@ -33,18 +30,14 @@ const style = {
 
 };
 
-export default function DeleteUserDialogue(props) {
+export default function DeleteClientDialogue(props) {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Pegando o usuário logado, para pegar as informações:
-  const user = useSelector((state) => state.user.currentUser);
-  //
-  
   // Para fechar o modal e mudar o estado do openLogouAlert (definido na SideBar e passado pelo props):
   const [openAlert, setOpen] = useState(true);
   const handleClose = () => {
     setOpen(false);
-    props.setDeleteUserDialogue(false);
+    props.setDeleteClientDialogue(false);
   }
   //
 
@@ -63,19 +56,19 @@ export default function DeleteUserDialogue(props) {
   //
 
   // Para deletar o usuário:
-  const handleDeleteUser = async (e) => {
+  const handleDeleteClient = async (e) => {
     e.preventDefault()
 
     setIsLoading(true)
 
-    deleteUser(props.selectedUser.id)
+    deleteClient(props.selectedClient.id)
     .then(response => {
       if (response.status === 200) {
-        handleAlertMessage("success", "O usuário foi deletado com sucesso.")
+        handleAlertMessage("success", "O assistido foi deletado com sucesso.")
         setIsLoading(false)
         setTimeout(() => { window.location.reload() }, 500);
       } else {
-          handleAlertMessage("error", "Algo deu errado na tentativa de deletar esse usuário.")
+          handleAlertMessage("error", "Algo deu errado na tentativa de deletar esse assistido.")
           setIsLoading(false)
       }
       }).catch(error => {
@@ -100,7 +93,7 @@ export default function DeleteUserDialogue(props) {
                 
 
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Exclusão de Usuário
+                    Exclusão de Assistido
                 </h3>
 
                 <button
@@ -120,7 +113,7 @@ export default function DeleteUserDialogue(props) {
 
                 <div className="text-left">
                     <p className="text-sm ml-3 text-gray-500 text-justify">
-                        Você deseja excluir o usuário <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedUser.name}</span>? Ao excluir você irá apagar permanentemente os registros dele(a) de forma irreversível.
+                        Você deseja realmente excluir o assistido <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedClient.name}</span>? Ao excluir você irá apagar permanentemente os registros dele(a) de forma irreversível.
                     </p>
                 </div>
             </div>
@@ -130,7 +123,7 @@ export default function DeleteUserDialogue(props) {
             <button
                 type="button"
                 className="inline-flex rounded-md bg-red-600 px-3 ml-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
-                onClick={handleDeleteUser}
+                onClick={handleDeleteClient}
             >
                 Excluir Usuário
             </button>
