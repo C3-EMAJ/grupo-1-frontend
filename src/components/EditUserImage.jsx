@@ -182,7 +182,7 @@ export default function EditUserImage(props) {
                         </Dropzone>
 
                     ) : (
-                        <div className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50">
+                        <div className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg bg-gray-50">
                         <div className="flex items-center">
                             <img
                                 className="w-12 mr-3 cover h-12 rounded-lg"
