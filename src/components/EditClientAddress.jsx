@@ -62,6 +62,7 @@ export default function EditClientAddress(props) {
             if (response.status == 200) {
                 props.setIsLoading(false);
                 props.handleAlertMessage("success", "Assistido alterado com sucesso.");
+                setTimeout(() => { window.location.reload() }, 500);
             }
             //Se não der certo:
             else {

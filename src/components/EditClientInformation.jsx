@@ -44,7 +44,7 @@ const schemaForma = z.object({
             phoneTwo: data.phoneTwo.replace(/\D/g, ''),
             email: data.email.replace(/\D/g, ''),
         }
-    }).refine(data => data.phone || data.email, { message: 'Por favor, informe pelo menos um meio de contato', path: ['contact'] }) // if email is empty telephone is required and vice versa
+    })
 })
 
 const cpfMask = (data) => {
@@ -78,6 +78,7 @@ const dateMask = (data) => {
         .replace(/(\d{4})\d+?$/, '$1')
     // 29/07/1980
 }
+
 
 const phoneMask = (data) => {
     if (data === undefined || data === null ) {return data}
@@ -161,9 +162,11 @@ export default function EditClientForm(props) {
             if (isNaN(birthDateObject.getTime()) || year < 1900 || year > new Date().getFullYear() || month < 0 || month > 11 || day < 1 || day > daysInMonth[month]){
                 errors.birthday = "Data de Nascimento inválida";
             }
+            if (!information.email && !information.phone) {
+                errors.contact = "Preencha pelo menos um meio de contato (email, telefone)";
+            }
             if (Object.keys(errors).length > 0) {
                 setFormErrors(errors);
-
                 return;
             } else {
                 setFormErrors({
@@ -181,6 +184,7 @@ export default function EditClientForm(props) {
                     if (response.status == 200) {
                         props.setIsLoading(false);
                         props.handleAlertMessage("success", "Assistido alterado com sucesso.");
+                        setTimeout(() => { window.location.reload() }, 500);
                     }
                     //Se não der certo:
                     else {
@@ -279,9 +283,7 @@ export default function EditClientForm(props) {
     const [representative, setRepresentative] = useState(props.selectedClient.representativeId)
     return (
     <>  
-        {errors.information?.contact && (
-            <p className="text-red-500 mt-2">{errors.information?.contact?.message}</p>
-        )}
+        {formErrors.contact && <p className="text-red-500">{formErrors.contact}</p>}
         <form onSubmit={handleSubmit(handleSubmitForm)} className="grid gap-4 mb-4 sm:grid-cols-2">            
             <div>
                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
