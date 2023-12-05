@@ -1,0 +1,174 @@
+import React, { useEffect, useState } from "react";
+
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+
+import { deleteDemand } from '../../data/axios/apiCalls';
+
+import { useSelector } from 'react-redux';
+
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import Slide from '@mui/material/Slide';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+function SlideTransition(props) {
+  return <Slide {...props} direction="up" />;
+}
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+
+};
+
+export default function DeleteDemandDialogue(props) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Pegando o usuário logado, para pegar as informações:
+  const user = useSelector((state) => state.user.currentUser);
+  //
+  
+  // Para fechar o modal e mudar o estado do openLogouAlert (definido na SideBar e passado pelo props):
+  const [openAlert, setOpen] = useState(true);
+  const handleClose = () => {
+    setOpen(false);
+    props.setDeleteDemandDialogue(false);
+  }
+  //
+
+  // Mensagens de alerta que são mostradas na parte superior:
+  const [alertMessage, setAlertMessage] = useState(""); // Mensagem;
+  const [showAlertMessage, setShowAlertMessage] = useState(false); // Exibir ou não;
+  const [typeAlertMessage, setTypeAlertMessage] = useState(''); // Tipo da mensagem: success, error, warning ou info;
+
+  const handleAlertMessage = (type, message) => {
+      setShowAlertMessage(true);
+      setAlertMessage(message);
+      setTypeAlertMessage(type);
+
+      setTimeout(() => { setShowAlertMessage(false) }, 7000); // Fechar a mensagem;
+  };
+  //
+
+  // Para deletar uma demanda:
+  const handleDeleteDemand = async (e) => {
+    e.preventDefault()
+
+    setIsLoading(true)
+
+    deleteDemand(props.selectedDemand.id)
+    .then(response => {
+      if (response.status === 200) {
+        handleAlertMessage("success", "A demanda foi deletada com sucesso.")
+        setIsLoading(false)
+        setTimeout(() => { window.location.reload() }, 500);
+      } else {
+          handleAlertMessage("error", "Algo deu errado na tentativa de deletar essa demanda.")
+          setIsLoading(false)
+      }
+      }).catch(error => {
+        handleAlertMessage("error", "Aconteceu um erro interno no servidor, tente novamente mais tarde.")
+        setIsLoading(false)
+      });
+    }
+    //
+
+  return (
+    <Modal
+      open={openAlert}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <> 
+      <Box sx={style}>
+        <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+        <div className="bg-white sm:p-6 sm:pb-4">
+            <div className="flex items-center justify-between pb-4 border-b rounded-t dark:border-gray-600">
+                
+
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Exclusão de Demanda
+                </h3>
+
+                <button
+                    type="button"
+                    className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover-bg-gray-600 dark:hover-text-white"
+                    onClick={handleClose}
+                >
+                    <CloseOutlinedIcon/>
+                    <span className="sr-only">Close modal</span>
+                </button>
+            </div>
+          
+            <div className=" flex sm:items-start mt-5">
+                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <ErrorOutlineOutlinedIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                </div>
+
+                <div className="text-left">
+                    { props.selectedDemand.number ? (
+
+                      <p className="text-sm ml-3 text-gray-500 text-justify">
+                        Você deseja excluir a demanda <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedDemand.number}</span>? Ao excluir você irá apagar os registros dessa demanda permanentemente.
+                      </p>
+
+                    ) : (
+
+                      <p className="text-sm ml-3 text-gray-500 text-justify">
+                        Você deseja excluir a demanda com assunto <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedDemand.subject}</span> do escritório <span style={{ color: 'red', fontWeight: '700' }}>{props.selectedDemand.office}</span>? Ao excluir você irá apagar os registros dessa demanda permanentemente.
+                      </p>
+
+                    )
+
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div className="bg-gray-50 py-4 px-4 text-center sm:flex sm:flex-row-reverse">
+            <button
+                type="button"
+                className="inline-flex rounded-md bg-red-600 px-3 ml-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
+                onClick={handleDeleteDemand}
+            >
+                Excluir Demanda
+            </button>
+        </div>
+      </div>
+      <React.Fragment>
+        {isLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+            <CircularProgress color="primary" />
+            </Box>
+        )}
+      </React.Fragment>
+      </Box>
+
+      <Snackbar
+            open={showAlertMessage}
+            severity="success"
+            TransitionComponent={SlideTransition}
+            anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center"
+            }}>
+            <Alert  severity={typeAlertMessage} sx={{ width: '100%' }}>
+            {alertMessage}
+            </Alert>
+      </Snackbar>
+      </>      
+    </Modal>
+  )
+}
