@@ -109,6 +109,15 @@ export const deleteUser = async (id) => {
   }
 };
 
+export const updateUserImage = async (id, data) => {
+  try {
+    console.log(data)
+    const res = await apiRequest.put(`/upload/user-image/${id}`, data);
+    return res
+  } catch (err) {
+    return false
+  }
+};
 
 export const deleteUserImage = async (id) => {
   try {
@@ -276,7 +285,6 @@ export const deleteDemandDocument = async (file) => {
 
 export const addUserOnDemand = async (content) => {
   try {
-    console.log("oi")
     const res = await apiRequest.post('/demands/add-user', content);
     return res
   } catch (err) {
