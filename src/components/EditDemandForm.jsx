@@ -17,12 +17,12 @@ export default function EditDemandForm(props) {
     //
 
     // Informações da demanda:
-    const [newDemandNumber, setNewDemandNumber] = useState(props.selectedDemand.number);
-    const [newDemandOffice, setNewDemandOffice] = useState(props.selectedDemand.office);
-    const [newDemandSubject, setNewDemandSubject] = useState(props.selectedDemand.subject);
-    const [newDemandSummary, setNewDemandSummary] = useState(props.selectedDemand.summary);
+    const [newDemandNumber, setNewDemandNumber] = useState(props.demandSelected.number);
+    const [newDemandOffice, setNewDemandOffice] = useState(props.demandSelected.office);
+    const [newDemandSubject, setNewDemandSubject] = useState(props.demandSelected.subject);
+    const [newDemandSummary, setNewDemandSummary] = useState(props.demandSelected.summary);
     
-    const [newDemandStatus, setNewDemandStatus] = useState(props.selectedDemand.status);
+    const [newDemandStatus, setNewDemandStatus] = useState(props.demandSelected.status);
     const getSelectedValue = (e) => {
       setNewDemandStatus(e.target.value);
     }
@@ -74,13 +74,14 @@ export default function EditDemandForm(props) {
         const newDemandActive = newDemandStatus === "Ação Pendente" || newDemandStatus === "Em Julgamento";
 
         // Faazendo a "apiCall": 
-        updateDemand(props.selectedDemand.id, {"office": newDemandOffice, "subject": newDemandSubject, "status": newDemandStatus, "summary": newDemandSummary, "isActive": newDemandActive })
+        updateDemand(props.demandSelected.id, {"office": newDemandOffice, "subject": newDemandSubject, "status": newDemandStatus, "summary": newDemandSummary, "isActive": newDemandActive })
         .then(response => {
             // Se der certo:
             if (response.status == 200) {
                 props.setIsLoading(false);
                 props.handleAlertMessage("success", "Demanda alterada com sucesso.");
-                setTimeout(() => { window.location.reload() }, 500);
+                props.setDemandSelected(false);
+                props.setShowEditInformations(false);
             }
             // Se não der certo:
             else {

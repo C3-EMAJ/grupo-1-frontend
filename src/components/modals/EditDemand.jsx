@@ -14,6 +14,8 @@ import Slide from '@mui/material/Slide';
 import EditDemandForm from "../EditDemandForm";
 import EditDemandDocuments from "../EditDemandDocuments";
 import EditDemandClients from "../EditDemandClients";
+import { getOneDemand } from "../../data/axios/apiCalls";
+import EditDemandUsers from "../EditDemandUsers";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -37,6 +39,51 @@ export default function EditDemand(props) {
     // O "blur" quando o diálogo de exlusão de imagem aparece:
     const [isBlur, setBlur] = useState(false);
     //
+
+    // Demanda que vai ser atualizada:
+    const [demandSelected, setDemandSelected] = useState(false)
+    //
+
+    // Pegando uma demanda que pode estar desatualizada:
+    useEffect(() => {
+    if (demandSelected === false){ 
+      fetchDemand();
+    }
+
+    }, [demandSelected]);
+    
+    const fetchDemand = async () => {
+        try {
+        if (isLoading === false) {
+            setIsLoading(true)
+        }
+
+        const req = getOneDemand(props.selectedDemand.id);
+        req.then(response => {
+            if (response.status === 200) {
+            setDemandSelected(response.data);
+            setIsLoading(false)
+            }
+
+            else {
+                setIsLoading(false);
+                handleAlertMessage("error", "Erro ao pegar a demanda para ser atualizada.")
+                setTimeout(() => { window.location.reload() }, 500);
+            }
+
+            }).catch(error => {
+                setIsLoading(false);
+                handleAlertMessage("error", "Erro ao pegar a demanda para ser atualizada.")
+                setTimeout(() => { window.location.reload() }, 500);
+            });
+        } catch (error) {
+            setIsLoading(false);
+            handleAlertMessage("error", "Erro ao pegar a demanda para ser atualizada.")
+            setTimeout(() => { window.location.reload() }, 500);
+        }
+    };
+    //
+
 
     // Para fechar o modal:
     const [openAlert, setOpen] = useState(true);
@@ -64,12 +111,15 @@ export default function EditDemand(props) {
     const [showEditInformations, setShowEditInformations] = useState(false);
     const [showEditDocuments, setShowEditDocuments] = useState(false);
     const [showEditClients, setShowEditClients] = useState(false);
+    const [showEditUsers, setShowEditUsers] = useState(false);
 
     const goBackButton = (e) => {
         e.preventDefault();
 
         setShowEditInformations(false);
-        setShowEditImage(false);
+        setShowEditDocuments(false);
+        setShowEditClients(false);
+        setShowEditUsers(false);
     }
     //
 
@@ -102,7 +152,9 @@ export default function EditDemand(props) {
                 {showEditInformations ? (
                     
                     <EditDemandForm   
-                        selectedDemand={props.selectedDemand} 
+                        demandSelected={demandSelected} 
+                        setDemandSelected={setDemandSelected}
+                        setShowEditInformations={setShowEditInformations}
                         goBackButton={goBackButton}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
@@ -112,8 +164,10 @@ export default function EditDemand(props) {
                 ) : showEditDocuments ? (
                 
                     <EditDemandDocuments 
-                        selectedDemand={props.selectedDemand}
+                        demandSelected={demandSelected}
+                        setDemandSelected={setDemandSelected} 
                         goBackButton={goBackButton}
+                        setShowEditDocuments={setShowEditDocuments}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
                         handleAlertMessage={handleAlertMessage}
@@ -123,16 +177,37 @@ export default function EditDemand(props) {
                 ) : showEditClients  ? (
                 
                     <EditDemandClients  
-                        selectedDemand={props.selectedDemand}
+                        demandSelected={demandSelected}
+                        setDemandSelected={setDemandSelected} 
                         goBackButton={goBackButton}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
                         handleAlertMessage={handleAlertMessage}
                         setBlur={setBlur}
                     />
+
+                ) : showEditUsers  ? (
+            
+                    <EditDemandUsers  
+                        demandSelected={demandSelected}
+                        setDemandSelected={setDemandSelected} 
+                        goBackButton={goBackButton}
+                        setShowEditUsers={setShowEditUsers}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                        handleAlertMessage={handleAlertMessage}
+                        setBlur={setBlur}
+                    />
                 
+                ) :  isLoading  ? (
+
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginTop: '15px', height: '300px'}}>
+                        <CircularProgress color="primary" />
+                    </Box>
+
                 ) : (
-                <>
+                    <div className="max-h-100 scroll-stylized">
+                    <div className="mr-2">   
                     <p className="text-gray-600 mb-4">
                     Selecione o que você deseja alterar:
                     </p>
@@ -167,9 +242,22 @@ export default function EditDemand(props) {
                         <button className="w-full" onClick={() => setShowEditClients(true)}>
                             <label className="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-yellow-300 rounded-lg hover:bg-yellow-50 cursor-pointer">
                             <div className="block">
-                                <div className="w-full text-lg font-semibold text-left">Assistidos e Usuários</div>
+                                <div className="w-full text-lg font-semibold text-left">Assistidos</div>
                                 <div className="w-full text-gray-500">
-                                Adicionar ou remover assistidos e usuários a essa demanda
+                                Adicionar ou remover assistidos
+                                </div>
+                            </div>
+                            <EastIcon style={{fontSize: 20}}/>
+                            </label>
+                        </button>
+                    </li>
+                    <li>
+                        <button className="w-full" onClick={() => setShowEditUsers(true)}>
+                            <label className="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-yellow-300 rounded-lg hover:bg-yellow-50 cursor-pointer">
+                            <div className="block">
+                                <div className="w-full text-lg font-semibold text-left">Usuários</div>
+                                <div className="w-full text-gray-500">
+                                Adicionar ou remover e usuários a essa demanda
                                 </div>
                             </div>
                             <EastIcon style={{fontSize: 20}}/>
@@ -177,7 +265,8 @@ export default function EditDemand(props) {
                         </button>
                     </li>
                     </ul>
-                </>
+                    </div>   
+                    </div>
                 )}
             </React.Fragment>
             </>
@@ -185,14 +274,6 @@ export default function EditDemand(props) {
             
 
         </div>
-
-        <React.Fragment>
-            {isLoading && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
-                <CircularProgress color="primary" />
-                </Box>
-            )}
-        </React.Fragment>
 
       </div>
         </Box>      
