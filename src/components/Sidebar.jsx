@@ -91,21 +91,21 @@ export default function Sidebar() {
 
                     </div>
                 </NavLink>
-                
-                <NavLink to="/usuarios">
-                    <div className={actualRoute === "usuarios" ? activateClassName : defaultClassName}>
-                        <PeopleAltOutlinedIcon/>
-                        <span className={`${!open && "hidden"} mx-4 font-medium origin-left duration-200`}>
-                            Usuários
-                        </span>
-                    </div>
-                </NavLink>
 
                 <NavLink to="/assistidos">
                     <div className={actualRoute === "assistidos" ? activateClassName : defaultClassName}>
                         <SupportAgentOutlinedIcon/>
                         <span className={`${!open && "hidden"} mx-4 font-medium origin-left duration-200`}>
                             Assistidos
+                        </span>
+                    </div>
+                </NavLink>
+
+                <NavLink to="/usuarios">
+                    <div className={actualRoute === "usuarios" ? activateClassName : defaultClassName}>
+                        <PeopleAltOutlinedIcon/>
+                        <span className={`${!open && "hidden"} mx-4 font-medium origin-left duration-200`}>
+                            Usuários
                         </span>
                     </div>
                 </NavLink>
