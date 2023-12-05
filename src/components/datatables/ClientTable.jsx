@@ -1,16 +1,44 @@
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import MUIDataTable from "mui-datatables";
+import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
 import { Avatar, Box, Typography } from '@mui/material'; 
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import DeleteClientDialogue from '../dialogues/DeleteClientDialogue';
+import DeactivateClientDialogue from '../dialogues/DeactivateClientDialogue';
+import EditClient from '../modals/EditClient';
+
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import Slide from '@mui/material/Slide';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+function SlideTransition(props) {
+  return <Slide {...props} direction="up" />;
+}
 
 export default function ClientTable(props) {
     // Personalizando o estilo da tabela:
+    // Mensagens de alerta que são mostradas na parte superior:
+    const [alertMessage, setAlertMessage] = useState(""); // Mensagem;
+    const [showAlertMessage, setShowAlertMessage] = useState(false); // Exibir ou não;
+    const [typeAlertMessage, setTypeAlertMessage] = useState(''); // Tipo da mensagem: success, error, warning ou info;
+
+    const handleAlertMessage = (type, message) => {
+        setShowAlertMessage(true);
+        setAlertMessage(message);
+        setTypeAlertMessage(type);
+
+        setTimeout(() => { setShowAlertMessage(false) }, 7000); // Fechar a mensagem;
+    };
+    //
+
+    const user = useSelector((state) => state.user.currentUser);
     const tableTheme = createTheme({
         palette: {
             primary:{
@@ -43,49 +71,28 @@ export default function ClientTable(props) {
         },
     });
     //
-    [
-        {
-            "name": "Paulo",
-            "email": "paulo@gmail.com",
-            "cellphone": "999999",
-            "cpf": "999999",
-            "birthDate": "999999",
-        }
-        ]
     // Criando as colunas da tabela (informando o que cada coluna irá pegar do "user"):
     const columns = [
-        { name: 'img', label: 'Foto', options: {
-            filter: false,
-            customBodyRender: (value, tableMeta, updateValue) => {   
-                const user = props.users[tableMeta.rowIndex]; // Acesse o objeto de usuário com base no índice da linha
-                return (
-                    <img
-                        className="object-cover w-8 h-8 rounded-full"
-                        src={user.img || "https://i.imgur.com/oYEFKb1.png"}
-                    />
-                );}
-        } },
+        { name: 'id', label: "ID"  , options: {filter: false} },
         { name: 'name', label: 'Nome', options: {filter: false} },
         { name: 'email', label: 'E-mail', options: {filter: false} },
-        { name: 'cellphone', label: 'Telefone', options: {filter: false} },
+        { name: 'phone', label: 'Telefone', options: {filter: false} },
         { name: 'cpf', label: 'CPF', options: {filter: false} },
-        { name: 'birthDate', label: 'Data de nascimento', options: {filter: false} },
+        { name: 'birthday', label: 'Data de nascimento', options: {filter: false} },
         { name: "Ações", 
         options: {
             filter: false,
             customBodyRender: (value, tableMeta, updateValue) => {
             return (
                 <div className="flex w-full justify-between">
-                    <button className="mx-1">
-                        <RemoveRedEyeOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => seeClient(tableMeta.rowData[0])} />
-                    </button>
+
 
                     <button className="mx-1">
                         <EditOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => updateClient(tableMeta.rowData[0])} />
                     </button>
 
                     <button className="mx-1">
-                        <DeleteOutlineOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => deleteClient(tableMeta.rowData[0])} />
+                        <BedtimeOutlinedIcon style={{ color: "#FDAE17" }} onClick={() => deactivateClient(tableMeta.rowData[0])} />
                     </button>
                 </div>
             );}
@@ -100,7 +107,6 @@ export default function ClientTable(props) {
         filterType: "dropdown",
         selectableRows: "none",
         responsive: "vertical"
-        
     };
     //
 
@@ -109,23 +115,33 @@ export default function ClientTable(props) {
     //
 
     // Abrir o diálogo para excluir um assistido:
-    const [openDeleteClientDialogue, setDeleteClientDialogue] = useState(false);
-    //
+    const [openDeactivateClientDialogue, setDeactivateClientDialogue] = useState(false);
+    const [openEditClientModal, setEditClientModal] = useState(false);
 
     //Funções que são chamadas quando clicamos nos botões que estão na coluna "Ações" da tabela:
-    const seeClient = (clientId) => {
-        console.log(clientId)
-    }
-
+    
     const updateClient = (clientId) => {
-        console.log(clientId)
+        const clientFound = props.clients.find(client => client.id === clientId)
+        if (user.type !== "Aluno") {
+            setSelectedClient(clientFound)
+            setEditClientModal(true)
+        } else {
+            handleAlertMessage("error", "Você não tem permissão para editar esse assistido.")
+            return false
+        }
     }
     
-    const deleteClient = (clientId) => {
-        setDeleteClientDialogue(true)
-        setSelectedClient(props.clients.find(client => client.id === clientId))
+    const deactivateClient = (clientId) => {
+        const clientFound = props.clients.find(client => client.id === clientId)
+        if (user.type !== "Aluno") {
+            setSelectedClient(clientFound)
+            setDeactivateClientDialogue(true)
+        } else {
+            handleAlertMessage("error", "Você não tem permissão para desativar esse assistido.")
+            return false
+        }
     }
-    //
+
 
     return (
         <Box
@@ -146,8 +162,21 @@ export default function ClientTable(props) {
             
         </ThemeProvider>
 
-        {openDeleteClientDialogue && <DeleteClientDialogue setDeleteClientDialogue={setDeleteClientDialogue} selectedClient={selectedClient} />}
-    
+        <Snackbar
+            open={showAlertMessage}
+            severity="success"
+            TransitionComponent={SlideTransition}
+            anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center"
+            }}>
+            <Alert  severity={typeAlertMessage} sx={{ width: '100%' }}>
+            {alertMessage}
+            </Alert>
+        </Snackbar>
+
+        {openDeactivateClientDialogue && <DeactivateClientDialogue setDeactivateClientDialogue={setDeactivateClientDialogue} selectedClient={selectedClient} />}
+        {openEditClientModal && <EditClient setEditClientModal={setEditClientModal} selectedClient={selectedClient} />}
     </Box>
     );
 }
