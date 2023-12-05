@@ -110,29 +110,18 @@ export const deleteUser = async (id) => {
 };
 
 
-export const updateUserImage = async (id, data) => {
+export const deleteUserImage = async (id) => {
   try {
-    console.log(data)
-    const res = await apiRequest.put(`/upload/user-image/${id}`, data);
+    const res = await apiRequest.delete(`/upload/user-image/${id}`);
     return res
   } catch (err) {
     return false
   }
 };
 
-export const deleteUserImage = async (id) => {
-  try {
-    const res = await apiRequest.delete(`/upload/user-image/${id}`);
-
-  } catch (err) {
-    return false
-  }
-}
-
 export const addNewClient = async (newClient) => {
   try {
     const res = await apiRequest.post("/clients/add-client", newClient);
-
     return res
   } catch (err) {
     return false
@@ -200,4 +189,124 @@ export const getUpdatedClient = async (id) => {
   } catch (err) {
     return false
   }
-}
+};
+
+export const addDemand = async (content) => {
+  try {
+    const res = await apiRequest.post('/demands/add-demand', content);
+    return res
+  } catch (err) {
+    return err
+  }
+};
+
+export const updateDemand = async (id, content) => {
+  try {
+    console.log(content)
+    const res = await apiRequest.put(`/demands/update/${id}`, content);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const deleteDemand = async (id) => {
+  try {
+    const res = await apiRequest.delete(`/demands/delete/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const activateDemand = async (id) => {
+  try {
+    const res = await apiRequest.put(`/demands/delete/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const deactivateDemand = async (id) => {
+  try {
+    const res = await apiRequest.put(`/demands/delete/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const getAllDemands = async () => {
+  try {
+    const res = await apiRequest.get('/demands/find-all');
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const getOneDemand = async (id) => {
+  try {
+    const res = await apiRequest.get(`/demands/find/${id}`);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const addDemandDocument = async (id, file) => {
+  try {
+    const res = await apiRequest.post(`/upload/demand-document/${id}`, file);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const deleteDemandDocument = async (file) => {
+  try {
+    const res = await apiRequest.put('/upload/demand-document', file);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+
+export const addUserOnDemand = async (content) => {
+  try {
+    console.log("oi")
+    const res = await apiRequest.post('/demands/add-user', content);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const removeUserOnDemand = async (content) => {
+  try {
+    const res = await apiRequest.put('/demands/remove-user', content);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const addClientOnDemand = async (content) => {
+  try {
+    const res = await apiRequest.post('/demands/add-client', content);
+    return res
+  } catch (err) {
+    return false
+  }
+};
+
+export const removeClientOnDemand = async (content) => {
+  try {
+    const res = await apiRequest.put('/demands/remove-client', content);
+    return res
+  } catch (err) {
+    return false
+  }
+};
