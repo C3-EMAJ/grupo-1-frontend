@@ -83,9 +83,6 @@ export default function Demandas() {
     });
     //
 
-    console.log(activeDemandsOnFetch);
-    console.log(completedDemandsOnFetch)
-
     setDemands(activeDemandsOnFetch);
     setCompletedDemands(completedDemandsOnFetch);
 

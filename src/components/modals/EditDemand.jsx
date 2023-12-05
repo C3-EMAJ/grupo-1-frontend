@@ -180,6 +180,7 @@ export default function EditDemand(props) {
                         demandSelected={demandSelected}
                         setDemandSelected={setDemandSelected} 
                         goBackButton={goBackButton}
+                        setShowEditClients={setShowEditClients}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
                         handleAlertMessage={handleAlertMessage}

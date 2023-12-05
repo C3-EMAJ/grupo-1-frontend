@@ -12,11 +12,11 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 
 import { useSelector } from 'react-redux';
 
-import { addUserOnDemand, getAllUsers, updateUserImage } from "../data/axios/apiCalls";
+import { addClientOnDemand, getAllClients } from "../data/axios/apiCalls";
 
 import RemoveDemandClientDialogue from "./dialogues/RemoveDemandClientDialogue";
 
-export default function EditDemandUsers(props) {
+export default function EditDemandClients(props) {
     const [isLoading, setIsLoading] = useState(false);
 
     // Pegando o usuário logado, para pegar as informações:
@@ -24,111 +24,110 @@ export default function EditDemandUsers(props) {
     //
 
     // Usuários que serão mostrados;
-    const [demandUsers, setDemandUsers] = useState(props.demandSelected.Users);
+    const [demandClients, setDemandClients] = useState(props.demandSelected.Clients);
     //
 
     // Usuários que serão mostrados;
-    const [usersToSelect, setUsersToSelect] = useState(false);
+    const [clientsToSelect, setClientsToSelect] = useState(false);
 
     useEffect(() => {
-    if (usersToSelect === false){ 
+    if (clientsToSelect === false){ 
         
-        fetchUsers();
+        fetchClients();
 
-    }}, [usersToSelect]);
+    }}, [clientsToSelect]);
     
-    const fetchUsers = async () => {
+    const fetchClients = async () => {
         try {
             if (isLoading === false) {
                 setIsLoading(true)
             }
 
-            const req = getAllUsers();
+            const req = getAllClients();
             req.then(response => {
                 if (response.status === 200) {
-                    setUsersToSelect(response.data);
+                    setClientsToSelect(response.data);
                     setIsLoading(false)
                 }
 
                 else {
                     setIsLoading(false);
-                    props.handleAlertMessage("error", "Erro ao achar os usuários.")
-                    props.setShowEditUsers(false);
+                    props.handleAlertMessage("error", "Erro ao achar os clientes.")
+                    props.setShowEditClients(false);
                 }
 
                 }).catch(error => {
                     setIsLoading(false);
-                    props.handleAlertMessage("error", "Erro ao achar os usuários.")
-                    props.setShowEditUsers(false);
+                    props.handleAlertMessage("error", "Erro ao achar os clientes.")
+                    props.setShowEditClients(false);
                 });
         } catch (error) {
             setIsLoading(false);
-            props.handleAlertMessage("error", "Erro interno no servidor ao procurar os usuários.")
-            props.setShowEditUsers(false);
+            props.handleAlertMessage("error", "Erro interno no servidor.")
+            props.setShowEditClients(false);
         }
     };
     //
     
     // Mostrar ou não os usuários a serem selecionados:
-    const [showSelectUsers, setShowSelectUsers] = useState(false);
+    const [showSelectClients, setShowSelectClients] = useState(false);
     //
 
     // Mostrar ou não os usuários a serem selecionados:
-    const [selectedUser, setSelectedUser] = useState(false);
+    const [selectedClient, setSelectedClient] = useState(false);
     //
 
     // Quando clicam em um usuário no dropdown:
-    const handleSelect = (user) => {   
-        setShowSelectUsers(false);
-        setSelectedUser(user);
+    const handleSelect = (client) => {   
+        setShowSelectClients(false);
+        setSelectedClient(client);
     };
     //
 
     // Quando o botão "Carregar novo usuário" é clicado:
-    const handleAddUserOnDemand = (e) => {
+    const handleAddClientOnDemand = (e) => {
         e.preventDefault();
-        if (selectedUser === false) {
-            props.handleAlertMessage("error", "Insira um usuário.")
+        if (selectedClient === false) {
+            props.handleAlertMessage("error", "Insira um assistido.")
             return false
         }
         setIsLoading(true);
-
-        console.log(props.demandSelected)
     
-        addUserOnDemand({"idDemand": props.demandSelected.id , "idUser": selectedUser.id})
+        addClientOnDemand({"idDemand": props.demandSelected.id , "idClient": selectedClient.id})
         .then(response => {
             // Se der certo:
             if (response.status == 200) {
                 setIsLoading(false);
-                props.handleAlertMessage("success", "Usuário adicionado com sucesso.");
+                props.handleAlertMessage("success", "Assistido adicionado com sucesso.");
                 props.setDemandSelected(false);
-                props.setShowEditUsers(false);
+                props.setShowEditClients(false);
 
             }
             // Se não der certo:
             else {
                 setIsLoading(false);
-                props.handleAlertMessage("error", "Erro ao adicionar esse usuário.");
-                setSelectedUser(false);
+                props.handleAlertMessage("error", "Erro ao adicionar esse assistido.");
+                setSelectedClient(false);
             }
         })
         // Se ocorrer um erro na comunicação com a API:
         .catch(error => {
+            console.log(error)
             setIsLoading(false);
             props.handleAlertMessage("error", "Erro interno no servidor.");
-            setSelectedUser(false);
+            setSelectedClient(false);
         });
 
     };
     //
 
     // Mostrar ou não o diálogo para remover um usuário de uma demanda:
-    const [showRemoveUserDialogue, setShowRemoveUserDialogue] = useState(false);
-    const [userToRemove, setUserToRemove] = useState(false);
+    const [showRemoveClientDialogue, setShowRemoveClientDialogue] = useState(false);
+    const [clientToRemove, setClientToRemove] = useState(false);
 
-    const handleDeleteUser = (user) => {
-        setUserToRemove(user);
-        setShowRemoveUserDialogue(true);
+    const handleDeleteClient = (client) => {
+        setClientToRemove(client);
+        setShowRemoveClientDialogue(true);
         props.setBlur(true);
     }
     //   
@@ -137,7 +136,7 @@ export default function EditDemandUsers(props) {
     <>
         <div className="bg-white rounded-lg">
 
-        {(isLoading && selectedUser === false) ? (
+        {(isLoading && selectedClient === false) ? (
 
             <Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginTop: '15px', height: '300px'}}>
                 <CircularProgress color="primary" />
@@ -149,16 +148,16 @@ export default function EditDemandUsers(props) {
             <div className="mr-2">
 
 
-                {(demandUsers.length > 0) && (
+                {(demandClients.length > 0) && (
                     <>
                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Usuários dessa demanda
+                        Assistidos dessa demanda
                     </label>
 
                     <div className="w-full align-center mb-8 max-h-40 p-1 block mb- border border-yellow-300 rounded-lg scroll-stylized">
                     
                     <div className="grid grid-cols-3">
-                    {demandUsers.map((item, index) => (
+                    {demandClients.map((item, index) => (
                       <div key={index} className="inline-flex items-center mb-3 max-w-xs">
                           <div 
                             style={{ 
@@ -178,7 +177,7 @@ export default function EditDemandUsers(props) {
                             width: '50px',
                             height: '50px',
                           }}
-                          onClick={() => handleDeleteUser(item)}
+                          onClick={() => handleDeleteClient(item)}
                           className="text-red-600 rounded-lg hover:bg-red-100"
                         >
                           <DeleteOutlineOutlinedIcon />
@@ -194,17 +193,17 @@ export default function EditDemandUsers(props) {
             </div>
 
             <label className="block mb-3 text-sm font-medium text-gray-900">
-                    Adicionar novos usuários
+                    Adicionar novos assistidos
             </label>
 
             <button 
-                onClick={() => setShowSelectUsers(!showSelectUsers)}
-                disabled={selectedUser}
+                onClick={() => setShowSelectClients(!showSelectClients)}
+                disabled={selectedClient}
                 className="text-white bg-yellow-500 w-full hover:bg-yellow-400 focus:ring-4 focus:outline-none focus:ring-yellow-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-between"
             >
                 
                 <span>Selecionar novo usuário</span>
-                {(showSelectUsers === false) ? (
+                {(showSelectClients === false) ? (
                     <ExpandMoreIcon/>
                 ) : (
                     <ExpandLessIcon/>
@@ -212,24 +211,22 @@ export default function EditDemandUsers(props) {
 
             </button>
 
-            {showSelectUsers && (
+            {showSelectClients && (
 
                 <div className="w-full bg-white max-h-40 scroll-stylized divide-y divide-gray-100 rounded-lg shadow-md">
                 <div className="py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {usersToSelect.map((item, index) => (
+                    {clientsToSelect.map((item, index) => (
                         <button 
                         key={index} 
                         onClick={() => handleSelect(item)}
                         className="flex items-center justify-between mb-4 w-full hover:bg-gray-100">
-
+                        
                         <div className="flex items-center ml-2">
-                          <img
-                            className="object-cover w-8 h-8 rounded-full mr-4"
-                            src={item.UserImage.url}
-                          />
+
+                            <AccountCircleOutlinedIcon style={{ marginLeft: '4px', color: "black"}} />
                         
                           <div className="block px-4 py-2">
-                            {item.name} ({item.type})
+                            {item.name} (<strong>CPF:</strong> {item.cpf})
                           </div>
 
                         </div>
@@ -241,22 +238,18 @@ export default function EditDemandUsers(props) {
             </div>
             )}
 
-            {selectedUser && (
+            {selectedClient && (
                 <div className="flex mt-4 flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg bg-gray-50">
                 <div className="flex items-center">
 
-                    <img
-                        className="object-cover w-12 h-12 rounded-full mr-4"
-                        src={selectedUser.UserImage.url}
-                    />
-
+                    <AccountCircleOutlinedIcon style={{ marginRight: '5px', fontSize: '40px'}} />
                     <div className="flex flex-col">
                         <strong style={{ maxWidth: '200px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                        {selectedUser.name}
+                        {selectedClient.name}
                         </strong>
                         <span className="text-xs text-gray-500 mt-1">
-                        {selectedUser.type}
-                        <button onClick={() => setSelectedUser(false)} className="border-0 bg-transparent text-red-500 ml-1 cursor-pointer">
+                        {selectedClient.cpf}
+                        <button onClick={() => setSelectedClient(false)} className="border-0 bg-transparent text-red-500 ml-1 cursor-pointer">
                             Remover
                         </button>
                         </span>
@@ -280,18 +273,18 @@ export default function EditDemandUsers(props) {
             </button>
 
             <button 
-                onClick={handleAddUserOnDemand}
+                onClick={handleAddClientOnDemand}
                 className="flex items-center h-11 py-2 px-2 text-sm font-medium text-center text-white text-white bg-yellow-500 border border-yellow-500 hover:bg-yellow-400 hover:border-yellow-400 focus:ring-4 focus:ring-gray-200 rounded-lg">
                     {(isLoading == false) ? (
                         <>
                         <FileUploadOutlinedIcon style={{marginRight: "5px", fontSize: "22px"}}/>
-                        Carregar novo usuário
+                        Carregar novo assistido
                         </>
                     ) : (
 
                         <>
                         <CircularProgress size={20} style={{marginRight: "10px", fontSize: "2px"}} color="secondary" />
-                        Carregar novo usuário
+                        Carregar novo assistido
                         </>
                     )}
                     
